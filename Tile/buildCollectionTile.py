@@ -1,6 +1,9 @@
 import numpy as np
 import rasterio
-from Tile import Tile
+if __name__ == '__main__':
+    from Tile import Tile
+else:
+    from Tile.Tile import Tile
 
 def buildCollectionTile(pathimage):
     w=9

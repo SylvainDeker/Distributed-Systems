@@ -1,13 +1,13 @@
 #! /bin/python3
 import sys
 from pyspark import SparkContext
-from buildCollectionTile import buildCollectionTile
+from Tile.buildCollectionTile import buildCollectionTile
 from Tile import Tile
 import cv2 as cv
 import numpy as np
 
 
-(collection,height,width,channels) = buildCollectionTile('NE1_50M_SR_W/NE1_50M_SR_W.tif')
+(collection,height,width,channels) = buildCollectionTile('./data/NE1_50M_SR_W/NE1_50M_SR_W.tif')
 
 sc = SparkContext()
 rdd1 = sc.parallelize(collection)
@@ -17,7 +17,7 @@ kernel = np.array([[0, -1, 0],
 rdd2 = rdd1.map(lambda n: n.filter2D(kernel))
 collection_res = rdd2.collect()
 
-print(collection_res)
+# print(collection_res)
 # build puzzle
 # img = np.zeros((channels,height,width))
 # for tile in collection_res:

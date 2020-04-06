@@ -53,6 +53,7 @@ class Tile:
         img = cv.filter2D(img,-1,kernel)
         img = np.moveaxis(img,-1,0)
         self.img = img
+        return self
 
 
 if __name__ == "__main__":
