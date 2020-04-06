@@ -130,3 +130,6 @@ dmypy.json
 
 spark-3.0.0-preview2-bin-hadoop2.7/
 data/*
+*.png
+*.tif
+*.tiff
