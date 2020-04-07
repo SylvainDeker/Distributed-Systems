@@ -57,7 +57,11 @@ class Tile:
 
 
 if __name__ == "__main__":
+    from shapely.geometry import mapping
     import rasterio
+    import fiona
+    from collections import OrderedDict
+    import pprint
 
     data = rasterio.open('../data/NE1_50M_SR_W/NE1_50M_SR_W.tif')
     img = np.array([data.read(1),data.read(2),data.read(3)])
@@ -77,6 +81,22 @@ if __name__ == "__main__":
     # print(tmp.shape)
     cv.imwrite("res.png",cv.cvtColor(tmp,cv.COLOR_RGB2BGR))
 
-
+    ################################### Test de Polygon
     print(tile.getPolygon())
-    print("Area:",tile.getPolygon().area)
+
+    ################################### Test de Fiona
+    schema = {  'geometry':'Polygon',
+                'properties': OrderedDict([  ('id', 'int')  ])
+            }
+
+    with fiona.open("res.shp",mode="w",driver="ESRI Shapefile",schema=schema,crs=data.crs) as dst:
+        record = {
+                'geometry': mapping(tile.getPolygon()) ,
+                'properties': OrderedDict([ ('id', '0') ])
+                }
+        dst.write(record)
+
+    with fiona.open("res.shp") as src:
+        pprint.pprint(src[0])
+
+    print("OK")
