@@ -1,5 +1,6 @@
-import numpy as np
 import rasterio
+import numpy as np
+
 if __name__ == '__main__':
     from Tile import Tile
 else:
@@ -31,19 +32,22 @@ def buildCollectionTile(pathimage):
             end_w = (i+1) * unit_width
             collection.append(Tile(img,start_h,start_w,end_h,end_w))
 
-    return (collection,data.height,data.width,len(data.indexes))
+    return (collection,data)
 
 
 if __name__ == '__main__':
-    import cv2 as cv
+    
 
-    kernel = np.array([[0, -1, 0],
-                   [-1, 4, -1],
-                   [0, -1, 0]], np.float32)
+    kernel = np.array([[-1, -1, -1],
+                   [-1, 8, -1],
+                   [-1, -1, -1]], np.float32)
 
-    (collection,height,width,chanels) = buildCollectionTile('../data/NE1_50M_SR_W/NE1_50M_SR_W.tif')
+    (collection,info) = buildCollectionTile('../data/NE1_50M_SR_W/NE1_50M_SR_W.tif')
+    height = info.height
+    width = info.width
+    channels = info.count
 
-    img = np.zeros((chanels,height,width))
+    img = np.zeros((channels,height,width))
 
     for tile in collection:
         ((x0,y0),(x1,y1)) = tile.points
@@ -53,11 +57,14 @@ if __name__ == '__main__':
 
 
 
+    res = rasterio.open("res.tiff",'w',
+                        driver=info.driver,
+                        width=info.width,
+                        height=info.height,
+                        count=info.count,
+                        dtype=info.dtypes[0],
+                        crs=info.crs,
+                        transform=info.transform)
 
-
-    tmp = np.moveaxis(img,0,-1)
-
-    print(tmp)
-    print(tmp.shape)
-
-    cv.imwrite("res.png",cv.cvtColor(tmp,cv.COLOR_RGB2BGR))
+    for i in range(res.count):
+        res.write(img[i],i+1)
