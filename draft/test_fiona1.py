@@ -8,7 +8,17 @@ with fiona.open("../data/ne_10m_urban_areas/ne_10m_urban_areas.shp") as src:
     pprint.pprint(src[1]) # It's a 'record', A record has an id key.
     pprint.pprint(src[1]['id']) # A record has an id key.
     pprint.pprint(src[1]['properties']) #  The keys of the properties mapping are the same as the keys of the properties mapping in the schema
-    # TODO 1.5.3
+    pprint.pprint(src[1]['geometry']) #  A record has a geometry key. Its corresponding value is a mapping with 'type' and coordinates keys.
+    # Since the coordinates are just tuples, or lists of tuples, or lists of lists of tuples, the type tells you how to interpret them.
+    # Point -> A single (x, y) tuple
+    # LineString -> A list of (x, y) tuple vertices
+    # Polygon -> A list of rings (each a list of (x, y) tuples)
+    # MultiPoint -> A list of points (each a single (x, y) tuple)
+    # MultiLineString -> A list of lines (each a list of (x, y) tuples)
+    # MultiPolygon -> A list of polygons
+
+    # coordinate systems, (easting, northing) = (long,lat)
+
 
     print(src.driver) # OGR format driver used to open file
     print(src.crs)
@@ -38,3 +48,6 @@ with fiona.open("../data/ne_10m_urban_areas/ne_10m_urban_areas.shp") as src:
 
 
 # A record you get from a collection is a Python dict, the values in the fields are typed properly for the type of record.
+
+print("Supported_drivers:")
+print(fiona.supported_drivers)
