@@ -1,5 +1,6 @@
 import rasterio
 import numpy as np
+import itertools
 from shapely.geometry import Polygon
 
 if __name__ == '__main__':
@@ -26,17 +27,17 @@ def build_collection_tile(pathimage):
     start_h = 0
     collection = []
     print(itr_h, itr_w)
-    for j in range(itr_h):
-        for i in range(itr_w):
-            start_h = j * unit_height
-            start_w = i * unit_width
-            end_h = (j+1) * unit_height
-            end_w = (i+1) * unit_width
-            # collection.append(Tile(img, start_h, start_w, end_h, end_w))
-            collection.append(Tile(img, Polygon([(start_h, start_w),
-                                                 (start_h, end_w),
-                                                 (end_h, end_w),
-                                                 (end_h, start_w)])))
+
+    for j, i in itertools.product(range(itr_h), range(itr_w)):
+        start_h = j * unit_height
+        start_w = i * unit_width
+        end_h = (j+1) * unit_height
+        end_w = (i+1) * unit_width
+        # collection.append(Tile(img, start_h, start_w, end_h, end_w))
+        collection.append(Tile(img, Polygon([(start_h, start_w),
+                                             (start_h, end_w),
+                                             (end_h, end_w),
+                                             (end_h, start_w)])))
 
     return (collection, data)
 
