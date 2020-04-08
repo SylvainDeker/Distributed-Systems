@@ -30,8 +30,13 @@ class Tile:
         assert y1 > y0
         assert x0 < dim[0]
         assert y0 < dim[1]
-        self.points = ((x0, y0), (x1, y1))
-
+        self.bounds = ((x0, y0), (x1, y1))
+        wide = x1-x0
+        height = y1-y0
+        self._bounding_polygon = Polygon([(x0, y0),
+                                          (x0, y0+height),
+                                          (x0+wide, y0+height),
+                                          (x0+wide, y0)])
         (edge_x, edge_y, lx, ly) = zero_padding(dim, x0, y0, x1, y1)
 
         img_0_padded = np.pad(img[:, x0:edge_x+x0, y0:edge_y+y0],
@@ -46,14 +51,12 @@ class Tile:
         assert x1-x0 == self.img.shape[1]
         assert y1-y0 == self.img.shape[2]
 
-    def get_polygon(self):
-        ((x0, y0), (x1, y1)) = self.points
-        wide = x1-x0
-        height = y1-y0
-        return Polygon([(x0, y0),
-                        (x0, y0+height),
-                        (x0+wide, y0+height),
-                        (x0+wide, y0)])
+    def _get_bounding_polygon(self):
+        return self._bounding_polygon
+
+    def _set_bounding_polygon(self):
+        sys.stderr.write("Write access forbidden in \"bounding_polygon\"\n")
+        sys.exit(-1)
 
     def filter2D(self, kernel):
         img = np.moveaxis(self.img, 0, -1)
@@ -61,6 +64,8 @@ class Tile:
         img = np.moveaxis(img, -1, 0)
         self.img = img
         return self
+
+    bounding_polygon = property(_get_bounding_polygon, _set_bounding_polygon)
 
 
 if __name__ == "__main__":
@@ -89,7 +94,7 @@ if __name__ == "__main__":
     cv.imwrite("res.png", cv.cvtColor(tmp, cv.COLOR_RGB2BGR))
 
     # ----------------- Test de Polygon
-    print(tile.get_polygon())
+    print(tile.bounding_polygon)
 
     # ----------------- Test de Fiona
     schema = {'geometry': 'Polygon',
@@ -98,7 +103,7 @@ if __name__ == "__main__":
     with fiona.open("res.shp", mode="w",
                     driver="ESRI Shapefile",
                     schema=schema, crs=data.crs) as dst:
-        record = {'geometry': mapping(tile.get_polygon()),
+        record = {'geometry': mapping(tile.bounding_polygon),
                   'properties': OrderedDict([('id', '0')])}
         dst.write(record)
 

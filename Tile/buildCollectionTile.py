@@ -61,10 +61,10 @@ if __name__ == '__main__':
                     schema=schema, crs=info.crs) as dst:
 
         for tile in collection:
-            record = {'geometry': mapping(tile.get_polygon()),
+            record = {'geometry': mapping(tile.bounding_polygon),
                       'properties': OrderedDict([('id', '0')])}
             dst.write(record)
-            ((x0, y0), (x1, y1)) = tile.points
+            ((x0, y0), (x1, y1)) = tile.bounds
             tile.filter2D(kernel)
             img[:, x0:x1, y0:y1] = tile.img
 
