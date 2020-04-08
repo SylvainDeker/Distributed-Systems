@@ -36,7 +36,10 @@ def buildCollectionTile(pathimage):
 
 
 if __name__ == '__main__':
-    
+    from collections import OrderedDict
+    from shapely.geometry import mapping
+    import fiona
+    import pprint
 
     kernel = np.array([[-1, -1, -1],
                    [-1, 8, -1],
@@ -48,11 +51,24 @@ if __name__ == '__main__':
     channels = info.count
 
     img = np.zeros((channels,height,width))
+    schema = {  'geometry':'Polygon',
+                'properties': OrderedDict([  ('id', 'int')  ])
+            }
 
-    for tile in collection:
-        ((x0,y0),(x1,y1)) = tile.points
-        tile.filter2D(kernel)
-        img[:,x0:x1,y0:y1] = tile.img
+    with fiona.open("res.shp",mode="w",driver="ESRI Shapefile",schema=schema,crs=info.crs) as dst:
+
+        for tile in collection:
+            record = {
+            'geometry': mapping(tile.getPolygon()) ,
+            'properties': OrderedDict([ ('id', '0') ])
+            }
+            dst.write(record)
+            ((x0,y0),(x1,y1)) = tile.points
+            tile.filter2D(kernel)
+            img[:,x0:x1,y0:y1] = tile.img
+
+
+
     img = np.uint8(img)
 
 
@@ -68,3 +84,7 @@ if __name__ == '__main__':
 
     for i in range(res.count):
         res.write(img[i],i+1)
+
+    with fiona.open("res.shp") as src:
+        for i in src:
+            pprint.pprint(i)
