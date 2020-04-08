@@ -11,6 +11,7 @@ from Tile import Tile
 
 sc = SparkContext()
 rdd1 = sc.parallelize(collection)
+# TODO use rdd.toLocalIterator()
 kernel = np.array([[-1, -1, -1],
                    [-1, 8, -1],
                    [-1, -1, -1]], np.float32)
