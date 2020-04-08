@@ -1,5 +1,6 @@
 import rasterio
 import numpy as np
+from shapely.geometry import Polygon
 
 if __name__ == '__main__':
     from Tile import Tile
@@ -31,7 +32,11 @@ def build_collection_tile(pathimage):
             start_w = i * unit_width
             end_h = (j+1) * unit_height
             end_w = (i+1) * unit_width
-            collection.append(Tile(img, start_h, start_w, end_h, end_w))
+            # collection.append(Tile(img, start_h, start_w, end_h, end_w))
+            collection.append(Tile(img, Polygon([(start_h, start_w),
+                                                 (start_h, end_w),
+                                                 (end_h, end_w),
+                                                 (end_h, start_w)])))
 
     return (collection, data)
 
@@ -64,7 +69,8 @@ if __name__ == '__main__':
             record = {'geometry': mapping(tile.bounding_polygon),
                       'properties': OrderedDict([('id', '0')])}
             dst.write(record)
-            ((x0, y0), (x1, y1)) = tile.bounds
+            (x0, y0, x1, y1) = tile.bounding_polygon.bounds
+            (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
             tile.filter2D(kernel)
             img[:, x0:x1, y0:y1] = tile.img
 

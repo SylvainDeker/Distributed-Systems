@@ -15,9 +15,11 @@ def zero_padding(dim, x0, y0, x1, y1):
 class Tile:
     """docstring for Tile."""
 
-    def __init__(self, img, x0, y0, x1, y1):
+    def __init__(self, img, bounding_polygon):
         dim = (img.shape[1], img.shape[2])
-        # print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
+        (x0, y0, x1, y1) = bounding_polygon.bounds
+        (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
         # print("dim",dim)
         # print("x0",x0)
         # print("y0",y0)
@@ -30,13 +32,9 @@ class Tile:
         assert y1 > y0
         assert x0 < dim[0]
         assert y0 < dim[1]
-        self.bounds = ((x0, y0), (x1, y1))
         wide = x1-x0
         height = y1-y0
-        self._bounding_polygon = Polygon([(x0, y0),
-                                          (x0, y0+height),
-                                          (x0+wide, y0+height),
-                                          (x0+wide, y0)])
+        self._bounding_polygon = bounding_polygon
         (edge_x, edge_y, lx, ly) = zero_padding(dim, x0, y0, x1, y1)
 
         img_0_padded = np.pad(img[:, x0:edge_x+x0, y0:edge_y+y0],
@@ -81,8 +79,7 @@ if __name__ == "__main__":
     print("Input img shape:", img.shape)
 
     # tile = Tile(img,5200,10500,6000,13000)
-    tile = Tile(img, 0, 0, 1000, 900)
-
+    tile = Tile(img, Polygon([(0, 0), (0, 1000), (1000, 1000),  (1000, 0)]))
     kernel = np.array([[0, -1, 0],
                        [-1, 4, -1],
                        [0, -1, 0]], np.float32)
