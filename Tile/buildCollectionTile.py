@@ -10,13 +10,11 @@ else:
     from Tile.Tile import Tile
 
 
-def build_collection_tile(pathimage):
+def build_collection_tile(pathimage,unit_height=500,unit_width=500):
 
     with rasterio.open(pathimage) as data:
         info = data
 
-    unit_height = 500
-    unit_width = 500
     itr_h = int(info.height/unit_height) + (1 if unit_height % info.height > 0
                                             else 0)
     itr_w = int(info.width/unit_width) + (1 if unit_width % info.width > 0
