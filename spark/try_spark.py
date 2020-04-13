@@ -1,9 +1,14 @@
 #! /bin/python3
+import os
 import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# print(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from pyspark import SparkContext
 from Tile.buildCollectionTile import build_collection_tile
-from Tile import Tile
+from Tile.Tile import Tile
+
+
 
 
 (collection, info) = build_collection_tile(
