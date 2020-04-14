@@ -26,7 +26,7 @@ kernel = np.array([[-1, -1, -1],
 client = Client(sys.argv[1])
 rdd = db.from_sequence(collection).map(lambda n: n.filter2D(kernel))
 collection2 = rdd.compute()
-print(collection2)
+print(type(collection2))
 # with rasterio.open('res.tif', 'w',
 #                    driver=info.driver,
 #                    width=info.width, height=info.height, count=info.count,
