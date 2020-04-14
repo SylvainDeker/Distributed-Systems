@@ -5,4 +5,4 @@ PYTHONFILE=$1
 EXTRAFILE=$2
 
 
-PYSPARK_PYTHON=python3 ${SPARK} --master local[4] ${PYTHONFILE} ${EXTRAFILE}
+PYSPARK_PYTHON=python3 ${SPARK} --master local[4] --py-files ${PYTHONFILE} ${EXTRAFILE}
