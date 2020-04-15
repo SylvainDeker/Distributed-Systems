@@ -36,10 +36,11 @@ class Tile:
         return self._bounding_polygon
 
     def filter2D(self, kernel):
-        img = np.moveaxis(self.img, 0, -1)
+        dtype = self.img.dtype
+        img = np.moveaxis(self._img, 0, -1)
         img = cv.filter2D(img, -1, kernel)
         img = np.moveaxis(img, -1, 0)
-        self._img = img
+        self._img = img.astype(dtype)
         return self
 
     bounding_polygon = property(_get_bounding_polygon, None)
