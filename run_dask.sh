@@ -1,8 +1,16 @@
 #! /bin/sh
-IP=`hostname -I | awk '{print $1}'`
-echo $IP
-konsole --hold -e dask-scheduler &
-sleep 1
-konsole --hold -e dask-worker tcp://$IP:8786 &
-sleep 1
-python3 test_dask.py tcp://$IP:8786
+# IP=`hostname -I | awk '{print $1}'`
+# echo $IP
+# dask-scheduler --pid-file dask-scheduler.pid &
+# sleep 2
+# dask-worker --preload Tile/Tile.py --preload Tile/buildCollectionTile.py --pid-file dask-worker.pid tcp://$IP:8786 &
+# sleep 2
+# # python3 daskk/try_dask.py tcp://$IP:8786
+# sleep 1
+# kill -9 `cat dask-worker.pid`
+# sleep 1
+# kill -9 `cat dask-scheduler.pid`
+# rm dask-scheduler.pid
+# rm dask-worker.pid
+
+python3 daskk/try_dask.py
