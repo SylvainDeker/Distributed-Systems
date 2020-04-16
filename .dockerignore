@@ -1,0 +1,6 @@
+__pycache__
+.git
+.pytest_cache
+*.tif
+*.tiff
+*.png
