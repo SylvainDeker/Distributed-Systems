@@ -1,18 +1,8 @@
 exit 0
+# 1st time:
+docker build -t distributed-systems-ubuntu .
 
-docker run hello-world
-docker -d run hello-world
-
-# redirect the port 8080 to the container s port 80:
-docker run -d -p 8080:80 nginx
-4f1214c9ac7c011a664a97d6ab0c09db6baa8299446f8924264532e7afa3b263
-# Execute cmd
-docker exec -ti 4f1214c9ac7c011a664a97d6ab0c09db6baa8299446f8924264532e7afa3b263 echo hello
-#list imgs:
-docker image ls
-# running containers:
-docker ps --all
-# Stop a container:
-docker stop 4f1214c9ac7c
-#rm a container
-docker rm hello-world
+#step 1
+docker run -t -d -v `pwd`:/root/Distributed-Systems distributed-systems-ubuntu
+# step 2
+docker exec -ti 5e2a08f0c3683375088fb3476d9afb940c813788027ce040943e71cb6103be3d bash
