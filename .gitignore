@@ -133,3 +133,4 @@ data/*
 *.png
 *.tif
 *.tiff
+dask-worker-space/
