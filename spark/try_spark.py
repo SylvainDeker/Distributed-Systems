@@ -31,7 +31,7 @@ for tile in collection_res:
     (x0, y0, x1, y1) = tile.bounding_polygon.bounds
     (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
     img[:, x0:x1, y0:y1] = tile.img
-res = rasterio.open("res.tiff", 'w',
+res = rasterio.open("res_spark.tiff", 'w',
                     driver=info.driver,
                     width=info.width,
                     height=info.height,
