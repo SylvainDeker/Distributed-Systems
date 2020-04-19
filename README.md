@@ -17,9 +17,9 @@ docker build -t distributed-systems-ubuntu .
 # Run docker
 -----
 ```
-docker run -t -d -v `pwd`:/root/Distributed-Systems distributed-systems-ubuntu
+docker run -it --rm -v $PWD:/root/Distributed-Systems distributed-systems-ubuntu bash
 ```
-# Open Bash shell
+# Open Bash shell (if needed, a.k.a. after a docker stop, docker start sequence)
 -----
 ```
 docker exec -ti <ID> bash

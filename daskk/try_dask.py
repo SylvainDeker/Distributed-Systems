@@ -7,14 +7,14 @@ import numpy as np
 import rasterio
 from rasterio.windows import Window
 
-from Tile.buildCollectionTile import build_collection_tile
-from Tile.Tile import Tile
+from tile.buildCollectionTile import build_collection_tile
+from tile.tile import Tile
 
 if __name__ == '__main__':
 
 
     client = Client()
-    # client.upload_file("Tile/Tile.py")
+    # client.upload_file("tile/tile.py")
     (collection, info) = build_collection_tile(
                         './data/NE1_50M_SR_W/NE1_50M_SR_W.tif')
     kernel = np.array([[-2, -1, -2],

@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 echo "Download Spark"
 
 wget https://www.apache.org/dyn/closer.lua/spark/spark-3.0.0-preview2/spark-3.0.0-preview2-bin-hadoop2.7.tgz
