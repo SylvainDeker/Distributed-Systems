@@ -40,9 +40,11 @@ if __name__ == '__main__':
     import fiona
     import pprint
 
-    kernel = np.array([[-1, -1, -1],
-                       [-1, 8, -1],
-                       [-1, -1, -1]], np.float32)
+    kernel = np.array([[-1, -2, -4, -2, -1],
+                       [-2, -4, -8, -4, -2],
+                       [-4, -8, 84, -8, -4],
+                       [-2, -4, -8, -4, -2],
+                       [-1, -2, -4, -2, -1]], np.float32)
 
     (collection, info) = build_collection_tile(
                                     '../data/NE1_50M_SR_W/NE1_50M_SR_W.tif')
@@ -55,6 +57,7 @@ if __name__ == '__main__':
         for t in collection:
             (x0, y0, x1, y1) = t.bounding_polygon.bounds
             (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
+            t.filter2D(kernel)
             for i in info.indexes:
                 dst.write(t.img[i-1],
                           window=Window(y0, x0, y1-y0, x1-x0),
