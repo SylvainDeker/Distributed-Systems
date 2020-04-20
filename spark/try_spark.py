@@ -46,6 +46,6 @@ if __name__ == '__main__':
                        [-2, -4, -8, -4, -2],
                        [-1, -2, -4, -2, -1]], np.float32)
 
-    spark_filter2D('data/NE1_50M_SR_W/NE1_50M_SR_W.tif',
+    try_spark_filter2D('data/NE1_50M_SR_W/NE1_50M_SR_W.tif',
                    kernel,
                    'res_spark.tiff')

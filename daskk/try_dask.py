@@ -42,4 +42,4 @@ if __name__ == '__main__':
                        [-2, -4, -8, -4, -2],
                        [-1, -2, -4, -2, -1]], np.float32)
 
-    dask_filter2D('./data/NE1_50M_SR_W/NE1_50M_SR_W.tif', kernel, 'res_dask.tiff')
+    try_dask_filter2D('./data/NE1_50M_SR_W/NE1_50M_SR_W.tif', kernel, 'res_dask.tiff')

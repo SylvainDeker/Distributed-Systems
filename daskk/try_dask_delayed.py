@@ -54,6 +54,6 @@ if __name__ == '__main__':
                        [-4, -8, 84, -8, -4],
                        [-2, -4, -8, -4, -2],
                        [-1, -2, -4, -2, -1]], np.float32)
-    dask_delayed_filter2D('data/NE1_50M_SR_W/NE1_50M_SR_W.tif',
+    try_dask_delayed_filter2D('data/NE1_50M_SR_W/NE1_50M_SR_W.tif',
                           kernel,
                           'res_dask_delayed.tiff')
