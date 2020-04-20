@@ -19,7 +19,7 @@ import dask
 
 
 def try_dask_delayed_filter2D(pathimage, kernel, output_pathimage):
-    Client()
+    client = Client()
 
     (collection, info) = build_collection_tile(pathimage)
 
@@ -44,7 +44,7 @@ def try_dask_delayed_filter2D(pathimage, kernel, output_pathimage):
                 dst.write(t.img[i-1],
                           window=Window(y0, x0, y1-y0, x1-x0),
                           indexes=i)
-
+    client.close()
 
 
 if __name__ == '__main__':
