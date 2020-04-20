@@ -18,16 +18,10 @@ import pprint
 import dask
 
 
-if __name__ == '__main__':
-    print(Client())
+def try_dask_delayed_filter2D(pathimage, kernel, output_pathimage):
+    Client()
 
-
-    kernel = np.array([[-1, -1, -1],
-                       [-1, 8, -1],
-                       [-1, -1, -1]], np.float32)
-
-    (collection, info) = build_collection_tile(
-                                        'data/NE1_50M_SR_W/NE1_50M_SR_W.tif')
+    (collection, info) = build_collection_tile(pathimage)
 
     output = []
     for t in collection:
@@ -38,11 +32,10 @@ if __name__ == '__main__':
         res.append(output[i].compute())
 
 
-    with rasterio.open('res_dask_delayed.tiff', 'w',
+    with rasterio.open(output_pathimage, 'w',
                        driver=info.driver,
                        width=info.width, height=info.height, count=info.count,
                        dtype=info.dtypes[0], transform=info.transform) as dst:
-
 
         for t in res:
             (x0, y0, x1, y1) = t.bounding_polygon.bounds
@@ -51,3 +44,16 @@ if __name__ == '__main__':
                 dst.write(t.img[i-1],
                           window=Window(y0, x0, y1-y0, x1-x0),
                           indexes=i)
+
+
+
+if __name__ == '__main__':
+
+    kernel = np.array([[-1, -2, -4, -2, -1],
+                       [-2, -4, -8, -4, -2],
+                       [-4, -8, 84, -8, -4],
+                       [-2, -4, -8, -4, -2],
+                       [-1, -2, -4, -2, -1]], np.float32)
+    dask_delayed_filter2D('data/NE1_50M_SR_W/NE1_50M_SR_W.tif',
+                          kernel,
+                          'res_dask_delayed.tiff')

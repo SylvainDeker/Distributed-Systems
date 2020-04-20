@@ -10,23 +10,18 @@ from rasterio.windows import Window
 from Tile.buildCollectionTile import build_collection_tile
 from Tile.Tile import Tile
 
-if __name__ == '__main__':
 
 
+def try_dask_filter2D(pathimage, kernel, output_pathimage):
     client = Client()
     # client.upload_file("Tile/Tile.py")
-    (collection, info) = build_collection_tile(
-                        './data/NE1_50M_SR_W/NE1_50M_SR_W.tif')
-    kernel = np.array([[-2, -1, -2],
-                       [-1, 12, -1],
-                       [-2, -1, -2]], np.float32)
-
+    (collection, info) = build_collection_tile(pathimage)
 
 
     rdd = db.from_sequence(collection).map(lambda n: n.filter2D(kernel))
     collection2 = rdd.compute()
-    print(len(collection2))
-    with rasterio.open('res_dask.tiff', 'w',
+    # print(len(collection2))
+    with rasterio.open(output_pathimage, 'w',
                        driver=info.driver,
                        width=info.width, height=info.height, count=info.count,
                        dtype=info.dtypes[0], transform=info.transform) as dst:
@@ -38,3 +33,13 @@ if __name__ == '__main__':
                 dst.write(t.img[i-1],
                           window=Window(y0, x0, y1-y0, x1-x0),
                           indexes=i)
+
+if __name__ == '__main__':
+
+    kernel = np.array([[-1, -2, -4, -2, -1],
+                       [-2, -4, -8, -4, -2],
+                       [-4, -8, 84, -8, -4],
+                       [-2, -4, -8, -4, -2],
+                       [-1, -2, -4, -2, -1]], np.float32)
+
+    dask_filter2D('./data/NE1_50M_SR_W/NE1_50M_SR_W.tif', kernel, 'res_dask.tiff')
