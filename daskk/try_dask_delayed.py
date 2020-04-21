@@ -16,21 +16,22 @@ from shapely.geometry import mapping
 import fiona
 import pprint
 import dask
+import time
 
 
 def try_dask_delayed_filter2D(pathimage, kernel, output_pathimage):
     client = Client()
-
     (collection, info) = build_collection_tile(pathimage)
 
-    output = []
-    for t in collection:
-        output.append(dask.delayed(t.filter2D)(kernel))
 
     res = []
-    for i in range(len(output)):
-        res.append(output[i].compute())
 
+    timer = time.time()
+    for i in range(len(collection)):
+        e = dask.delayed(collection[i].filter2D)(kernel)
+        res.append(e.compute())
+
+    timer = time.time() - timer
 
     with rasterio.open(output_pathimage, 'w',
                        driver=info.driver,
@@ -45,6 +46,7 @@ def try_dask_delayed_filter2D(pathimage, kernel, output_pathimage):
                           window=Window(y0, x0, y1-y0, x1-x0),
                           indexes=i)
     client.close()
+    return timer
 
 
 if __name__ == '__main__':
@@ -54,6 +56,7 @@ if __name__ == '__main__':
                        [-4, -8, 84, -8, -4],
                        [-2, -4, -8, -4, -2],
                        [-1, -2, -4, -2, -1]], np.float32)
-    try_dask_delayed_filter2D('data/NE1_50M_SR_W/NE1_50M_SR_W.tif',
+    t = try_dask_delayed_filter2D('data/NE1_50M_SR_W/NE1_50M_SR_W.tif',
                           kernel,
                           'res_dask_delayed.tiff')
+    print(t)

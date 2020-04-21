@@ -8,21 +8,25 @@ from pyspark import SparkContext
 from Tile.buildCollectionTile import build_collection_tile
 from Tile.Tile import Tile
 import rasterio
+import time
 
 def try_spark_filter2D(pathimage, kernel, output_pathimage):
     (collection, info) = build_collection_tile(pathimage)
-
     sc = SparkContext()
+
+    timer = time.time()
+
     rdd = sc.parallelize(collection)
-    # TODO use rdd.toLocalIterator()
     collection_res = []
     for n in rdd.toLocalIterator():
         collection_res.append(n.filter2D(kernel))
 
+    timer = time.time() - timer
+
     # rdd = rdd.map(lambda n: n.filter2D(kernel))
     # collection_res = rdd.collect()
 
-    print(len(collection_res))
+    return timer
 
     img = np.empty((info.count, info.height, info.width)).astype(info.dtypes[0])
     for tile in collection_res:
@@ -49,6 +53,8 @@ if __name__ == '__main__':
                        [-2, -4, -8, -4, -2],
                        [-1, -2, -4, -2, -1]], np.float32)
 
-    try_spark_filter2D('data/NE1_50M_SR_W/NE1_50M_SR_W.tif',
+    t = try_spark_filter2D('data/NE1_50M_SR_W/NE1_50M_SR_W.tif',
                    kernel,
                    'res_spark.tiff')
+
+    print(t)

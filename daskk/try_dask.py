@@ -9,7 +9,7 @@ from rasterio.windows import Window
 
 from Tile.buildCollectionTile import build_collection_tile
 from Tile.Tile import Tile
-
+import time
 
 
 def try_dask_filter2D(pathimage, kernel, output_pathimage):
@@ -18,9 +18,11 @@ def try_dask_filter2D(pathimage, kernel, output_pathimage):
     (collection, info) = build_collection_tile(pathimage)
 
 
+    timer = time.time()
     rdd = db.from_sequence(collection).map(lambda n: n.filter2D(kernel))
     collection2 = rdd.compute()
-    # print(len(collection2))
+    timer = time.time() - timer
+
     with rasterio.open(output_pathimage, 'w',
                        driver=info.driver,
                        width=info.width, height=info.height, count=info.count,
@@ -34,6 +36,7 @@ def try_dask_filter2D(pathimage, kernel, output_pathimage):
                           window=Window(y0, x0, y1-y0, x1-x0),
                           indexes=i)
     client.close()
+    return timer
 
 if __name__ == '__main__':
 
@@ -43,4 +46,5 @@ if __name__ == '__main__':
                        [-2, -4, -8, -4, -2],
                        [-1, -2, -4, -2, -1]], np.float32)
 
-    try_dask_filter2D('./data/NE1_50M_SR_W/NE1_50M_SR_W.tif', kernel, 'res_dask.tiff')
+    t = try_dask_filter2D('./data/NE1_50M_SR_W/NE1_50M_SR_W.tif', kernel, 'res_dask.tiff')
+    print(t)
