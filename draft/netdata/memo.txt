@@ -1,0 +1,22 @@
+Custom conf:
+etc/netdata/netdata.conf
+https://learn.netdata.cloud/docs/agent/daemon/config/
+
+To start Netdata, open a terminal and run:
+ service netdata start
+
+To stop Netdata, run:
+ service netdata stop
+
+To restart Netdata, run: (needed after have added a service)
+ service netdata restart
+
+https://learn.netdata.cloud/docs/agent/getting-started/#start-stop-and-restart-netdata
+
+
+#################################################
+If Netdata doesn't autodetetect data sources:
+ https://learn.netdata.cloud/docs/agent/collectors/plugins.d/
+
+Netdata uses internal and external plugins to collect data. Internal plugins run within the Netdata dÃ¦mon,
+ while external plugins are independent processes that send metrics to Netdata over pipes.
