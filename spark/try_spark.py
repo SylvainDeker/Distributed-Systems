@@ -15,9 +15,12 @@ def try_spark_filter2D(pathimage, kernel, output_pathimage):
     sc = SparkContext()
     rdd = sc.parallelize(collection)
     # TODO use rdd.toLocalIterator()
+    collection_res = []
+    for n in rdd.toLocalIterator():
+        collection_res.append(n.filter2D(kernel))
 
-    rdd = rdd.map(lambda n: n.filter2D(kernel))
-    collection_res = rdd.collect()
+    # rdd = rdd.map(lambda n: n.filter2D(kernel))
+    # collection_res = rdd.collect()
 
     print(len(collection_res))
 
