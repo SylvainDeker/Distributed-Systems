@@ -26,7 +26,6 @@ def try_spark_filter2D(pathimage, kernel, output_pathimage):
     # rdd = rdd.map(lambda n: n.filter2D(kernel))
     # collection_res = rdd.collect()
 
-    return timer
 
     img = np.empty((info.count, info.height, info.width)).astype(info.dtypes[0])
     for tile in collection_res:
@@ -45,6 +44,9 @@ def try_spark_filter2D(pathimage, kernel, output_pathimage):
     for i in range(res.count):
         res.write(img[i], i+1)
 
+    return timer
+
+    
 if __name__ == '__main__':
 
     kernel = np.array([[-1, -2, -4, -2, -1],
