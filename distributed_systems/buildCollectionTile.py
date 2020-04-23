@@ -4,10 +4,7 @@ import numpy as np
 import itertools
 from shapely.geometry import Polygon
 
-if __name__ == '__main__':
-    from Tile import Tile
-else:
-    from Tile.Tile import Tile
+from distributed_systems.tile import Tile
 
 
 def build_collection_tile(pathimage,unit_height=500,unit_width=500):

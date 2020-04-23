@@ -1,1 +1,1 @@
-python3 daskk/try_dask_delayed.py
+python3 distributed_systems/try_dask_delayed.py

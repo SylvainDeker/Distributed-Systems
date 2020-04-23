@@ -17,13 +17,21 @@ docker build -t distributed-systems-ubuntu .
 # Run docker
 -----
 ```
-docker run -t -d -v `pwd`:/root/Distributed-Systems distributed-systems-ubuntu
+docker run -it --rm -v $PWD:/root/Distributed-Systems distributed-systems-ubuntu bash
 ```
-# Open Bash shell
+# Install
 -----
 ```
-docker exec -ti <ID> bash
+pip3 install .
+#or pip3 install -e .
 ```
+
+#Test:
+-----
+```
+pytest test/
+```
+
 #Then try them:
 -----
 ```
@@ -31,4 +39,4 @@ docker exec -ti <ID> bash
 #or
 ./run_spark
 ```
-Those last 2 commands produce file .tiff here 
+Those last 2 commands produce file .tiff here

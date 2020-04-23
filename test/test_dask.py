@@ -3,10 +3,10 @@ import sys
 import pytest
 import numpy as np
 import rasterio
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from daskk.try_dask import try_dask_filter2D
-from daskk.try_dask_delayed import try_dask_delayed_filter2D
-from spark.try_spark import try_spark_filter2D
+
+from distributed_systems.try_dask import try_dask_filter2D
+from distributed_systems.try_dask_delayed import try_dask_delayed_filter2D
+from distributed_systems.try_spark import try_spark_filter2D
 
 
 kernel = np.array([[-1, -2, -4, -2, -1],

@@ -1,14 +1,12 @@
 #! /bin/python3
 import os
 import sys
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-# print(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from pyspark import SparkContext
-from Tile.buildCollectionTile import build_collection_tile
-from Tile.Tile import Tile
 import rasterio
 import time
+from distributed_systems.buildCollectionTile import build_collection_tile
+from distributed_systems.tile import Tile
 
 def try_spark_filter2D(pathimage, kernel, output_pathimage):
     (collection, info) = build_collection_tile(pathimage)
@@ -46,7 +44,7 @@ def try_spark_filter2D(pathimage, kernel, output_pathimage):
 
     return timer
 
-    
+
 if __name__ == '__main__':
 
     kernel = np.array([[-1, -2, -4, -2, -1],
