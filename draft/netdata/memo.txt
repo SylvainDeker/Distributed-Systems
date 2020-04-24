@@ -1,3 +1,5 @@
+http://127.0.0.1:19999/
+
 Custom conf:
 etc/netdata/netdata.conf
 https://learn.netdata.cloud/docs/agent/daemon/config/

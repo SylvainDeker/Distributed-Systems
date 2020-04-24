@@ -134,3 +134,4 @@ data/*
 *.tif
 *.tiff
 dask-worker-space/
+callgrind.out.*

@@ -1,0 +1,12 @@
+digraph {
+	graph [fontname=Arial, nodesep=0.125, ranksep=0.25];
+	node [fontcolor=white, fontname=Arial, height=0, shape=box, style=filled, width=0];
+	edge [fontname=Arial];
+	"<built-in method builtins.exec>" [color="#ff0000", fontcolor="#ffffff", fontsize="10.00", label="<built-in method builtins.exec>\n100.00%\n(4.35%)\n0×"];
+	"<built-in method builtins.exec>" -> "<module>" [arrowsize="0.98", color="#f82c01", fontcolor="#f82c01", fontsize="10.00", label="95.65%\n1×", labeldistance="3.83", penwidth="3.83"];
+	"<built-in method builtins.print>" [color="#e5a004", fontcolor="#ffffff", fontsize="10.00", label="<built-in method builtins.print>\n82.61%\n(82.61%)\n1×"];
+	"<module>" [color="#f82c01", fontcolor="#ffffff", fontsize="10.00", label="<module>\n95.65%\n(8.70%)\n1×"];
+	"<module>" -> "<built-in method builtins.print>" [arrowsize="0.91", color="#e5a004", fontcolor="#e5a004", fontsize="10.00", label="82.61%\n1×", labeldistance="3.30", penwidth="3.30"];
+	"<module>" -> "my_super_function" [arrowsize="0.35", color="#0d1f78", fontcolor="#0d1f78", fontsize="10.00", label="4.35%\n1×", labeldistance="0.50", penwidth="0.50"];
+	"my_super_function" [color="#0d1f78", fontcolor="#ffffff", fontsize="10.00", label="my_super_function\n4.35%\n(4.35%)\n1×"];
+}

@@ -1,4 +1,6 @@
 #!/bin/sh
+exit(0)
+
 valgrind --tool=callgrind ./test.py
 
 #######################
@@ -27,3 +29,15 @@ valgrind --tool=callgrind ./test.py
 
 # assembly code level annotation =>  --dump-instr=yes (This will produce profile data at instruction granularity, viewed with KCachegrind)
 # details of the control flow inside of functions, i.e. (conditional) jumps. =>--collect-jumps=yes.
+
+
+####### https://matthieu-brucher.developpez.com/tutoriels/cpp/profil-valgrind-visual-studio/?page=valgrind
+# Valgrind =
+#     memcheck, qui vérifie les fuites mémoires, les dépassements,
+#     cachegrind, qui mesure des données par rapport au cache,
+#     callgrind, qui est le profileur en question.
+#
+# Valgrind génère un fichier de résultat qui pourra être analysé par KCacheGrind.
+
+
+valgrind --tool=callgrind --dump-instr=yes --simulate-cache=yes --compute-jumps=yes python exemples/measure_image.py
