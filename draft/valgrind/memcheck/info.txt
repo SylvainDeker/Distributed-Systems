@@ -1,0 +1,1 @@
+-> Valgrind n'est pas capable de détecter  de vérifier les indices hors tableau sur des tableaux déclarés en statique.

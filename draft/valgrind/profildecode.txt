@@ -1,0 +1,15 @@
+## Profil par échantillonnage
+
+Observer tous les n cycles/instructions/défauts de cache/...la fonction
+ en cours d'exécution, ainsi que les fonctions parentes.
+    => Trés Inexacte && Trés Rapide,  il est nécessaire de tester
+    avec plusieurs valeurs de fréquence d'échantillonnage.
+
+## Profil par instrumentation
+
+Ajout à chaque appel de fonction une fonction d'instrumentation.
+      => Inéxacte (mieu que échantillonnage) && Rapide (moins que échantillonnage)
+
+## Profil par émulation (=> VALGRIND)
+Virtualisation de processeur.
+  => Mesure exacte && Lent

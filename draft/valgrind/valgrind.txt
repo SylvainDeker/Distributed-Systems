@@ -1,0 +1,20 @@
+#########################################""
+Memcheck : un détecteur de fuites mémoires (option par défaut)
+
+valgrind --tool=memcheck --leak-check=yes|no|full|summary --leak-resolution=low|med|high --show-reachable=yes ./test
+## `leak-check' peut prendre les valeurs suivantes :
+   no : ne fait rien.
+   full / yes : donne des détails sur chaque fuite mémoire.
+   summary : indique le nombre de fuites mémoires.
+
+## show-reachable étend la recherche aux zones encore pointées mais non désallouées.
+
+## leak-resolution indique le niveau de recherche des fuites mémoires.
+
+
+#########################################""
+Cachegrind : un simulateur de caches
+
+
+#########################################""
+Callgrind : un profileur
