@@ -12,16 +12,14 @@ def try_spark_filter2D(pathimage, kernel, output_pathimage):
     (collection, info) = build_collection_tile(pathimage)
     sc = SparkContext()
 
-
     timer = time.time()
+
     rdd = sc.parallelize(collection)
-    rdd = rdd.map(lambda n: n.filter2D(kernel))
-    timer_graph = time.time() - timer
+    collection_res = []
+    for n in rdd.toLocalIterator():
+        collection_res.append(n.filter2D(kernel))
 
-    timer = time.time()
-    collection_res = rdd.collect()
-    timer_compute = time.time() - timer
-
+    timer = time.time() - timer
 
 
     img = np.empty((info.count, info.height, info.width)).astype(info.dtypes[0])
@@ -41,7 +39,7 @@ def try_spark_filter2D(pathimage, kernel, output_pathimage):
     for i in range(res.count):
         res.write(img[i], i+1)
 
-    return (timer_graph, timer_compute)
+    return timer
 
 
 if __name__ == '__main__':
@@ -54,12 +52,6 @@ if __name__ == '__main__':
 
     t = try_spark_filter2D('data/NE1_50M_SR_W/NE1_50M_SR_W.tif',
                    kernel,
-                   'res_spark.tiff')
+                   'res_spark_toLocalIterator.tiff')
 
-    print("Time results:")
-    print("\t", "Graph: ",t[0])
-    print("\t", "Compute: ",t[1])
-    su = sum(t)
-    print("Time results in %:")
-    print("\t", "Graph: ",t[0]/su)
-    print("\t", "Compute: ",t[1]/su)
+    print(t)

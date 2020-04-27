@@ -29,7 +29,9 @@ def try_dask_delayed_filter2D(pathimage, kernel, output_pathimage):
     timer = time.time()
     for i in range(len(collection)):
         e = dask.delayed(collection[i].filter2D)(kernel)
+        # e.visualize(filename='graph_'+str(i)+'.svg')
         res.append(e.compute())
+
 
     timer = time.time() - timer
 
@@ -37,7 +39,6 @@ def try_dask_delayed_filter2D(pathimage, kernel, output_pathimage):
                        driver=info.driver,
                        width=info.width, height=info.height, count=info.count,
                        dtype=info.dtypes[0], transform=info.transform) as dst:
-
         for t in res:
             (x0, y0, x1, y1) = t.bounding_polygon.bounds
             (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
