@@ -135,3 +135,4 @@ data/*
 *.tiff
 dask-worker-space/
 callgrind.out.*
+*.svg
