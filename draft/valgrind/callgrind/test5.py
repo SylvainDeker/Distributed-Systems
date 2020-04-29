@@ -20,5 +20,5 @@ def main():
     for i in range(100):
         ac += MyObject3().a
     return ac
-
-main()
+if __name__ == '__main__':
+    main()
