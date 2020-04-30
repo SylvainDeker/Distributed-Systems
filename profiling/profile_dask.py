@@ -16,10 +16,12 @@ from profiling.profiler import profile_record_off
 
 def try_dask_filter2D(pathimage,
                       kernel,
-                      output_pathimage):
+                      output_pathimage,
+                      unit_height=500,
+                      unit_width=500):
     client = Client()
     # client.upload_file("tile/tile.py")
-    (collection, info) = build_collection_tile(pathimage)
+    (collection, info) = build_collection_tile(pathimage,unit_height,unit_width)
 
 
     profile_record_on()
@@ -48,6 +50,9 @@ def try_dask_filter2D(pathimage,
 
 
 if __name__ == '__main__':
+    if len(sys.argv) !=3:
+        print("Usage example: ", sys.argv[0]," 500 500")
+        exit(-1)
 
     kernel = np.array([[-1, -2, -4, -2, -1],
                        [-2, -4, -8, -4, -2],
@@ -57,4 +62,6 @@ if __name__ == '__main__':
 
     t = try_dask_filter2D('./data/NE1_50M_SR_W/NE1_50M_SR_W.tif',
                           kernel,
-                          'res_dask.tiff')
+                          'res_dask.tiff',
+                          int(sys.argv[1]),
+                          int(sys.argv[2]))
