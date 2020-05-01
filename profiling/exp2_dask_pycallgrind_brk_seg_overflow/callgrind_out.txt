@@ -1,0 +1,21 @@
+# callgrind format
+version: 1
+creator: callgrind-3.13.0
+pid: 417
+cmd:  python3 profiling/profile_dask2.py 500 500
+part: 3
+
+
+desc: I1 cache: 
+desc: D1 cache: 
+desc: LL cache: 
+
+desc: Timerange: Basic block 1809205596 - 1809205597
+desc: Trigger: Program termination
+
+positions: line
+events: Ir
+summary: 0
+
+
+totals: 0
