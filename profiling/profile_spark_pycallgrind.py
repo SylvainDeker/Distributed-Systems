@@ -7,22 +7,19 @@ import rasterio
 from distributed_systems.buildCollectionTile import build_collection_tile
 from distributed_systems.tile import Tile
 
-from profiling.profiler import profile_record_on
-from profiling.profiler import profile_record_off
+from pycallgrind import callgrind
 
 def try_spark_filter2D(pathimage, kernel, output_pathimage):
     (collection, info) = build_collection_tile(pathimage)
     sc = SparkContext()
 
+    with callgrind(tag="Graph"):
+        rdd = sc.parallelize(collection)
+        rdd = rdd.map(lambda n: n.filter2D(kernel))
 
-    profile_record_on()
-    rdd = sc.parallelize(collection)
-    rdd = rdd.map(lambda n: n.filter2D(kernel))
-    profile_record_off("profiling/rawdata/callgrind_graph.txt")
 
-    profile_record_on()
-    collection_res = rdd.collect()
-    profile_record_off("profiling/rawdata/callgrind_compute.txt")
+    with callgrind(tag="compute"):
+        collection_res = rdd.collect()
 
 
 

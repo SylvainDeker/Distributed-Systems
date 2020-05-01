@@ -10,9 +10,7 @@ from rasterio.windows import Window
 from distributed_systems.buildCollectionTile import build_collection_tile
 from distributed_systems.tile import Tile
 
-from profiling.profiler import profile_record_on
-from profiling.profiler import profile_record_off
-
+from pycallgrind import callgrind
 
 def try_dask_filter2D(pathimage,
                       kernel,
@@ -24,14 +22,13 @@ def try_dask_filter2D(pathimage,
     (collection, info) = build_collection_tile(pathimage,unit_height,unit_width)
 
 
-    profile_record_on()
-    rdd = db.from_sequence(collection).map(lambda n: n.filter2D(kernel))
-    profile_record_off("profiling/rawdata/callgrind_graph.txt")
+    with callgrind(tag="Graph"):
+        rdd = db.from_sequence(collection).map(lambda n: n.filter2D(kernel))
 
 
-    profile_record_on()
-    collection2 = rdd.compute()
-    profile_record_off("profiling/rawdata/callgrind_compute.txt")
+    with callgrind(tag="Compute"):
+        collection2 = rdd.compute()
+
 
 
     with rasterio.open(output_pathimage, 'w',
