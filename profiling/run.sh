@@ -6,12 +6,13 @@ profile_dask()
   valgrind --tool=callgrind \
   --callgrind-out-file=profiling/rawdata/callgrind_out.txt \
   --instr-atstart=no \
+  --trace-children=yes \
   --dump-instr=no \
   --simulate-cache=no \
   --collect-jumps=no \
   --cache-sim=no \
   --branch-sim=no \
-  python3 profiling/profile_dask.py $1 $2
+  python3 profiling/profile_dask_pycallgrind.py $1 $2
 }
 
 profile_spark()
@@ -27,6 +28,7 @@ profile_spark()
   valgrind --tool=callgrind \
   --callgrind-out-file=profiling/rawdata/callgrind_out.txt \
   --instr-atstart=no \
+  --trace-children=yes \
   --dump-instr=no \
   --simulate-cache=no \
   --collect-jumps=no \
@@ -38,5 +40,5 @@ profile_spark()
 
 
 
-profile_dask $1 $2
-# profile_spark
+# profile_dask 500 500
+profile_spark
