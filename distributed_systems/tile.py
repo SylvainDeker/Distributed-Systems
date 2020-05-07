@@ -51,6 +51,14 @@ class Tile:
         self._img = img.astype(dtype)
         return self
 
+    def add_noise(self,gain,mean,stddev):
+        (x0, y0, x1, y1) = [int(i) for i in self.bounding_polygon.bounds]
+        dtype = self.img.dtype
+        rdm = np.random.default_rng().normal(mean, stddev, self._img.shape)
+        self._img = (self._img * (gain + rdm)).astype(dtype)
+        return self
+
+
 
 if __name__ == "__main__":
 
