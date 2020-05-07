@@ -11,12 +11,13 @@ from rasterio.crs import CRS
 class Tile:
     """docstring for Tile."""
 
-    def __init__(self, pathimage, bounding_polygon):
+    def __init__(self, pathimage, bounding_polygon,index=None):
         """
         :param pathimage: path/to/image.tif
         :param bounding_polygon: Polygon from Shapely
+        :param index: (x,y) or any other id to find this tile back
         """
-
+        self._index = index
         (x0, y0, x1, y1) = [int(i) for i in bounding_polygon.bounds]
 
         img = []
@@ -25,10 +26,20 @@ class Tile:
                 img.append(data.read(i, window=Window(y0, x0, y1-y0, x1-x0)))
 
         self._img = np.asarray(img)
+        self._mean_radiosity = self._compute_mean_radiosity()
         x1 = self._img.shape[1]+x0
         y1 = self._img.shape[2]+y0
 
         self._bounding_polygon = box(x0, y0, x1, y1)
+
+
+    @property
+    def index(self):
+        return self._index
+
+    @property
+    def mean_radiosity(self):
+        return self._mean_radiosity
 
     @property
     def img(self):
@@ -37,6 +48,10 @@ class Tile:
     @property
     def bounding_polygon(self):
         return self._bounding_polygon
+
+    def _compute_mean_radiosity(self):
+        m = np.mean(np.mean(self._img,axis=1),axis=1)
+        return m.astype(self.img.dtype)
 
     def filter2D(self, kernel):
         """
@@ -49,6 +64,7 @@ class Tile:
         img = cv.filter2D(img, -1, kernel)
         img = np.moveaxis(img, -1, 0)
         self._img = img.astype(dtype)
+        self._mean_radiosity = self._compute_mean_radiosity()
         return self
 
     def add_noise(self,gain,mean,stddev):
@@ -56,6 +72,7 @@ class Tile:
         dtype = self.img.dtype
         rdm = np.random.default_rng().normal(mean, stddev, self._img.shape)
         self._img = (self._img * (gain + rdm)).astype(dtype)
+        self._mean_radiosity = self._compute_mean_radiosity()
         return self
 
 
@@ -75,7 +92,7 @@ if __name__ == "__main__":
          [0, -1, 0]],
         np.float32
     )
-    tile = Tile('../data/NE1_50M_SR_W/NE1_50M_SR_W.tif', box(x0, y0, x1, y1))
+    tile = Tile('data/NE1_50M_SR_W/NE1_50M_SR_W.tif', box(x0, y0, x1, y1))
 
     # tile.filter2D(kernel)
     # Result in ./res.png
@@ -105,4 +122,5 @@ if __name__ == "__main__":
     with fiona.open("res.shp") as src:
         pprint.pprint(src[0])
 
+    print(tile.mean_radiosity)
     print("OK")
