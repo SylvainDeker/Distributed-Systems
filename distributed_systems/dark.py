@@ -52,16 +52,20 @@ def extract_collections(pathimage,unit_height=500,unit_width=500):
 
         if y0 < px_lim_2:
             nb_item_c1 += 1
-            collection1.append(Tile(pathimage, Polygon([(x0, y0),
-                                                       (x1, y0),
-                                                       (x1, y1),
-                                                       (x0, y1)])))
+            collection1.append(Tile(pathimage,
+                                    Polygon([(x0, y0),
+                                             (x1, y0),
+                                             (x1, y1),
+                                             (x0, y1)]),
+                                    (i,j)))
         if y0 >= px_lim_1:
             nb_item_c2 += 1
-            collection2.append(Tile(pathimage, Polygon([(x0, y0),
-                                                       (x1, y0),
-                                                       (x1, y1),
-                                                       (x0, y1)])))
+            collection2.append(Tile(pathimage,
+                                    Polygon([(x0, y0),
+                                             (x1, y0),
+                                             (x1, y1),
+                                             (x0, y1)]),
+                                    (i,j)))
     nb_unit_width_collection1 = tile_lim_2
     nb_unit_width_collection2 = itr_w - tile_lim_1
 
@@ -71,7 +75,7 @@ def extract_collections(pathimage,unit_height=500,unit_width=500):
             nb_unit_width_collection1,
             nb_unit_width_collection2,
             nb_item_c1,
-            nb_item_c1,
+            nb_item_c2,
             nb_unit_width_collection1 * unit_width,
             nb_unit_width_collection2 * unit_width -
                 (unit_width - (info.width % unit_width)) *
