@@ -1,0 +1,8 @@
+imgleft:
+  gain: 1
+  mean: 0
+  stddev: 0.1
+imgright:
+  gain: 1
+  mean: 0
+  stddev: 0.1

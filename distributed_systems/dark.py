@@ -3,9 +3,26 @@ from rasterio.windows import Window
 import numpy as np
 import itertools
 from shapely.geometry import Polygon
-
+from dask.distributed import Client
 from distributed_systems.tile import Tile
+import dask
+import yaml
 
+
+def load_config(pathfile):
+    # Default value
+    data = {'imgleft': { 'gain': 1,
+                         'mean': 0,
+                         'stddev': 1},
+            'imgright':{ 'gain': 1,
+                         'mean': 0,
+                         'stddev': 1}
+            }
+
+    with open(pathfile,"r") as src:
+        data = yaml.safe_load(src)
+
+    return data
 
 def extract_collections(pathimage,unit_height=500,unit_width=500):
 
@@ -14,7 +31,6 @@ def extract_collections(pathimage,unit_height=500,unit_width=500):
 
     itr_h = int(info.height/unit_height) + (info.height % unit_height > 0)
     itr_w = int(info.width/unit_width) + (info.width % unit_width > 0)
-    print(itr_w)
 
     tile_lim_1 = int((itr_w)/3)
     tile_lim_2 = int((itr_w*2)/3)
@@ -62,16 +78,31 @@ def extract_collections(pathimage,unit_height=500,unit_width=500):
                 (info.width%unit_width > 0) )
 
 
-if __name__ == '__main__':
-    from collections import OrderedDict
-    from shapely.geometry import mapping
-    import fiona
-    import pprint
 
-
-
+def run_dask(pathimage, pathconfig):
+    client = Client()
     (collection1, collection2, info, _, _, _, _, w1, w2) = extract_collections(
-                                    'data/NE1_50M_SR_W/NE1_50M_SR_W.tif')
+                                    pathimage)
+    config = load_config(pathconfig)
+
+    res1 = []
+    res2 = []
+
+    for t in collection1:
+        (x0, y0, x1, y1) = t.bounding_polygon.bounds
+        (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
+        e = dask.delayed(t.add_noise)(config['imgleft']['gain'],
+                                      config['imgleft']['mean'],
+                                      config['imgleft']['stddev'])
+        res1.append(e.compute())
+
+    for t in collection2:
+        (x0, y0, x1, y1) = t.bounding_polygon.bounds
+        (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
+        e = dask.delayed(t.add_noise)(config['imgright']['gain'],
+                                      config['imgright']['mean'],
+                                      config['imgright']['stddev'])
+        res2.append(e.compute())
 
 
     with rasterio.open('res1.tif', 'w',
@@ -79,10 +110,9 @@ if __name__ == '__main__':
                        width=w1, height=info.height, count=info.count,
                        dtype=info.dtypes[0], transform=info.transform) as dst:
 
-        for t in collection1:
+        for t in res1:
             (x0, y0, x1, y1) = t.bounding_polygon.bounds
             (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
-            # t.filter2D(kernel)
             for i in info.indexes:
                 dst.write(t.img[i-1],
                           window=Window(y0, x0, y1-y0, x1-x0),
@@ -94,11 +124,61 @@ if __name__ == '__main__':
                        width=w2, height=info.height, count=info.count,
                        dtype=info.dtypes[0], transform=info.transform) as dst:
 
-        for t in collection2:
+        for t in res2:
             (x0, y0, x1, y1) = t.bounding_polygon.bounds
             (x0, y0, x1, y1) = (int(x0), int(y0-dec), int(x1), int(y1-dec))
-
             for i in info.indexes:
                 dst.write(t.img[i-1],
                           window=Window(y0, x0, y1-y0, x1-x0),
                           indexes=i)
+
+    client.close()
+
+
+
+
+
+if __name__ == '__main__':
+    from collections import OrderedDict
+    from shapely.geometry import mapping
+    import fiona
+    import pprint
+
+    # r = load_config('config.yaml')
+    # print(r)
+
+    run_dask('data/NE1_50M_SR_W/NE1_50M_SR_W.tif', 'config.yaml')
+
+
+    # (collection1, collection2, info, _, _, _, _, w1, w2) = extract_collections(
+    #                                 'data/NE1_50M_SR_W/NE1_50M_SR_W.tif')
+    #
+    #
+    # with rasterio.open('res1.tif', 'w',
+    #                    driver=info.driver,
+    #                    width=w1, height=info.height, count=info.count,
+    #                    dtype=info.dtypes[0], transform=info.transform) as dst:
+    #
+    #     for t in collection1:
+    #         (x0, y0, x1, y1) = t.bounding_polygon.bounds
+    #         (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
+    #         t.add_noise(1,0,0.1)
+    #         for i in info.indexes:
+    #             dst.write(t.img[i-1],
+    #                       window=Window(y0, x0, y1-y0, x1-x0),
+    #                       indexes=i)
+    #
+    # dec = info.width - w2
+    # with rasterio.open('res2.tif', 'w',
+    #                    driver=info.driver,
+    #                    width=w2, height=info.height, count=info.count,
+    #                    dtype=info.dtypes[0], transform=info.transform) as dst:
+    #
+    #     for t in collection2:
+    #         (x0, y0, x1, y1) = t.bounding_polygon.bounds
+    #         (x0, y0, x1, y1) = (int(x0), int(y0-dec), int(x1), int(y1-dec))
+    #
+    #         for i in info.indexes:
+    #             dst.write(t.img[i-1],
+    #                       window=Window(y0, x0, y1-y0, x1-x0),
+    #                       indexes=i)
