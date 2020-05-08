@@ -43,29 +43,38 @@ def extract_collections(pathimage,unit_height=500,unit_width=500):
     collection2 = []
     nb_item_c1 = 0
     nb_item_c2 = 0
-
+    list_intersection_c1_c2 = []
     for i, j in itertools.product(range(itr_h), range(itr_w)):
         x0 = i * unit_height
         y0 = j * unit_width
         x1 = (i+1) * unit_height
         y1 = (j+1) * unit_width
 
+        t1 = None
+        t2 = None
         if y0 < px_lim_2:
             nb_item_c1 += 1
-            collection1.append(Tile(pathimage,
-                                    Polygon([(x0, y0),
-                                             (x1, y0),
-                                             (x1, y1),
-                                             (x0, y1)]),
-                                    (i,j)))
+            t1 = Tile(pathimage,
+                     Polygon([(x0, y0),
+                              (x1, y0),
+                              (x1, y1),
+                              (x0, y1)]),
+                     (i,j))
+            collection1.append(t1)
+
         if y0 >= px_lim_1:
             nb_item_c2 += 1
-            collection2.append(Tile(pathimage,
-                                    Polygon([(x0, y0),
-                                             (x1, y0),
-                                             (x1, y1),
-                                             (x0, y1)]),
-                                    (i,j)))
+            t2 = Tile(pathimage,
+                      Polygon([(x0, y0),
+                               (x1, y0),
+                               (x1, y1),
+                               (x0, y1)]),
+                        (i,j))
+            collection2.append(t2)
+
+        if y0 >= px_lim_1 and y0 < px_lim_2 and t1 != None and t2 != None:
+            list_intersection_c1_c2.append((len(collection1)-1,len(collection2)))
+
     nb_unit_width_collection1 = tile_lim_2
     nb_unit_width_collection2 = itr_w - tile_lim_1
 
@@ -79,13 +88,13 @@ def extract_collections(pathimage,unit_height=500,unit_width=500):
             nb_unit_width_collection1 * unit_width,
             nb_unit_width_collection2 * unit_width -
                 (unit_width - (info.width % unit_width)) *
-                (info.width%unit_width > 0) )
-
+                (info.width%unit_width > 0),
+            list_intersection_c1_c2 )
 
 
 def run_dask(pathimage, pathconfig):
     client = Client()
-    (collection1, collection2, info, _, _, _, _, w1, w2) = extract_collections(
+    (collection1, collection2, info, _, _, _, _, w1, w2,list_intersection_c1_c2) = extract_collections(
                                     pathimage)
     config = load_config(pathconfig)
 
@@ -107,6 +116,39 @@ def run_dask(pathimage, pathconfig):
                                       config['imgright']['mean'],
                                       config['imgright']['stddev'])
         res2.append(e.compute())
+
+    computed_gains1 = np.empty((len(list_intersection_c1_c2),len(info.indexes)))
+    computed_gains2 = np.empty((len(list_intersection_c1_c2),len(info.indexes)))
+
+    for i in range(len(list_intersection_c1_c2)):
+        mr1 = collection1[list_intersection_c1_c2[i][0]].mean_radiosity
+        mr2 = collection2[list_intersection_c1_c2[i][1]].mean_radiosity
+        computed_gains1[i] = np.sqrt(mr2/mr1)
+        computed_gains2[i] = np.sqrt(mr1/mr2)
+
+    computed_gains1 = np.moveaxis(computed_gains1,1,0)
+    computed_gains2 = np.moveaxis(computed_gains2,1,0)
+
+    for i in range(len(info.indexes)):
+        computed_gains1[i] = np.convolve(computed_gains1[i],
+                                         config['kernel_gain'],
+                                         'same')
+        computed_gains2[i] = np.convolve(computed_gains2[i],
+                                         config['kernel_gain'],
+                                         'same')
+    computed_gains1 = np.moveaxis(computed_gains1,1,0)
+    computed_gains2 = np.moveaxis(computed_gains2,1,0)
+    print(computed_gains1)
+    print(computed_gains2)
+
+    res3 = []
+    for i in range(len(list_intersection_c1_c2)):
+        e1 = dask.delayed(res1[list_intersection_c1_c2[i][0]].apply_gain)(computed_gains1[i])
+        e2 = dask.delayed(res2[list_intersection_c1_c2[i][1]].apply_gain)(computed_gains2[i])
+        # list_intersection_c1_c2_gained.append((e1.compute(), e2.comptue()))
+        res3.append((e1.compute(), e2.comptue()))
+
+    # TODO DARK-FDR-001 step 8
 
 
     with rasterio.open('res1.tif', 'w',
@@ -135,6 +177,34 @@ def run_dask(pathimage, pathconfig):
                 dst.write(t.img[i-1],
                           window=Window(y0, x0, y1-y0, x1-x0),
                           indexes=i)
+
+    with rasterio.open('res3.tif', 'w',
+                       driver=info.driver,
+                       width=info.width, height=info.height, count=info.count,
+                       dtype=info.dtypes[0], transform=info.transform) as dst:
+        for t in res1:
+            (x0, y0, x1, y1) = t.bounding_polygon.bounds
+            (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
+            for i in info.indexes:
+                dst.write(t.img[i-1],
+                          window=Window(y0, x0, y1-y0, x1-x0),
+                          indexes=i)
+
+        for t in res2:
+            (x0, y0, x1, y1) = t.bounding_polygon.bounds
+            (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
+            for i in info.indexes:
+                dst.write(t.img[i-1],
+                          window=Window(y0, x0, y1-y0, x1-x0),
+                          indexes=i)
+        for (t,_) in res3:
+            (x0, y0, x1, y1) = t.bounding_polygon.bounds
+            (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
+            for i in info.indexes:
+                dst.write(t.img[i-1],
+                          window=Window(y0, x0, y1-y0, x1-x0),
+                          indexes=i)
+
 
     client.close()
 

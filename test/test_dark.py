@@ -172,7 +172,7 @@ def test_collection(data):
      nb_item_c1,
      nb_item_c1,
      width_img1,
-     width_img2 ) = extract_collections(data.img_path,
+     width_img2, _ ) = extract_collections(data.img_path,
                                         data.unit_height,
                                         data.unit_width)
 

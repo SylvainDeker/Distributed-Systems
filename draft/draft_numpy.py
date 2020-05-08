@@ -43,4 +43,16 @@ print(res.shape)
 res = np.rollaxis(a,3)
 print(res.shape)
 
+print('|||||||||||||||||||||||||')
+x = np.array([[0,1,2,99],
+              [4,5,6,99],
+              [7,8,9,99],
+              [10,11,12,99]])
+print(x)
+x = np.moveaxis(x,1,0)
+print(x)
+x = np.moveaxis(x,1,0)
+print(x)
+
+
 # print(res)

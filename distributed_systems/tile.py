@@ -68,10 +68,18 @@ class Tile:
         return self
 
     def add_noise(self,gain,mean,stddev):
-        (x0, y0, x1, y1) = [int(i) for i in self.bounding_polygon.bounds]
         dtype = self.img.dtype
         rdm = np.random.default_rng().normal(mean, stddev, self._img.shape)
         self._img = (self._img * (gain + rdm)).astype(dtype)
+        self._mean_radiosity = self._compute_mean_radiosity()
+        return self
+
+    def apply_gain(self,gain):
+        dtype = self.img.dtype
+        img = np.moveaxis(self._img, 0, -1)
+        img = (img * gain).astype(dtype)
+        img = np.moveaxis(img, -1, 0)
+        self._img = img
         self._mean_radiosity = self._compute_mean_radiosity()
         return self
 

@@ -6,3 +6,4 @@ imgright:
   gain: 1
   mean: 0
   stddev: 0.1
+kernel_gain: [1, 4, -11, 4, 1]
