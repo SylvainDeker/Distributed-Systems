@@ -94,20 +94,22 @@ def extract_collections(pathimage,unit_height=500,unit_width=500):
 
 def run_dask(pathimage, pathconfig):
     client = Client()
+    # DARK-FDR-001 step 1
     (collection1, collection2, info, _, _, _, _, w1, w2,list_intersection_c1_c2) = extract_collections(
                                     pathimage)
     config = load_config(pathconfig)
 
-    res1 = []
-    res2 = []
 
+    # DARK-FDR-001 step 2
+    collection1_res = []
+    collection2_res = []
     for t in collection1:
         (x0, y0, x1, y1) = t.bounding_polygon.bounds
         (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
         e = dask.delayed(t.add_noise)(config['imgleft']['gain'],
                                       config['imgleft']['mean'],
                                       config['imgleft']['stddev'])
-        res1.append(e.compute())
+        collection1_res.append(e.compute())
 
     for t in collection2:
         (x0, y0, x1, y1) = t.bounding_polygon.bounds
@@ -115,20 +117,26 @@ def run_dask(pathimage, pathconfig):
         e = dask.delayed(t.add_noise)(config['imgright']['gain'],
                                       config['imgright']['mean'],
                                       config['imgright']['stddev'])
-        res2.append(e.compute())
+        collection2_res.append(e.compute())
 
+    collection1 = collection1_res
+    collection2 = collection2_res
+
+    # DARK-FDR-001 step 3
+    # Already given by list_intersection_c1_c2
+
+    # DARK-FDR-001 step 4 & 5
     computed_gains1 = np.empty((len(list_intersection_c1_c2),len(info.indexes)))
     computed_gains2 = np.empty((len(list_intersection_c1_c2),len(info.indexes)))
-
     for i in range(len(list_intersection_c1_c2)):
         mr1 = collection1[list_intersection_c1_c2[i][0]].mean_radiosity
         mr2 = collection2[list_intersection_c1_c2[i][1]].mean_radiosity
         computed_gains1[i] = np.sqrt(mr2/mr1)
         computed_gains2[i] = np.sqrt(mr1/mr2)
 
+    # DARK-FDR-001 step 6
     computed_gains1 = np.moveaxis(computed_gains1,1,0)
     computed_gains2 = np.moveaxis(computed_gains2,1,0)
-
     for i in range(len(info.indexes)):
         computed_gains1[i] = np.convolve(computed_gains1[i],
                                          config['kernel_gain'],
@@ -138,25 +146,28 @@ def run_dask(pathimage, pathconfig):
                                          'same')
     computed_gains1 = np.moveaxis(computed_gains1,1,0)
     computed_gains2 = np.moveaxis(computed_gains2,1,0)
-    print(computed_gains1)
-    print(computed_gains2)
 
-    res3 = []
+    # DARK-FDR-001 step 7
+    intersection_res = []
     for i in range(len(list_intersection_c1_c2)):
-        e1 = dask.delayed(res1[list_intersection_c1_c2[i][0]].apply_gain)(computed_gains1[i])
-        e2 = dask.delayed(res2[list_intersection_c1_c2[i][1]].apply_gain)(computed_gains2[i])
-        # list_intersection_c1_c2_gained.append((e1.compute(), e2.comptue()))
-        res3.append((e1.compute(), e2.comptue()))
+        e1 = dask.delayed(collection1[list_intersection_c1_c2[i][0]].apply_gain)(computed_gains1[i])
+        e2 = dask.delayed(collection2[list_intersection_c1_c2[i][1]].apply_gain)(computed_gains2[i])
+        intersection_res.append((e1.compute(), e2.comptue()))
 
-    # TODO DARK-FDR-001 step 8
+    # DARK-FDR-001 step 8
+    res4 = []
+    for i in range(len(intersection_res)):
+        e1 = dask.delayed(intersection_res[i][0].filter2D)(np.array(config['kernel_blur']))
+        e2 = dask.delayed(intersection_res[i][1].filter2D)(np.array(config['kernel_blur']))
+        res4.append((e1.compute(), e2.comptue()))
 
 
-    with rasterio.open('res1.tif', 'w',
+    with rasterio.open('collection1.tif', 'w',
                        driver=info.driver,
                        width=w1, height=info.height, count=info.count,
                        dtype=info.dtypes[0], transform=info.transform) as dst:
 
-        for t in res1:
+        for t in collection1:
             (x0, y0, x1, y1) = t.bounding_polygon.bounds
             (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
             for i in info.indexes:
@@ -165,12 +176,12 @@ def run_dask(pathimage, pathconfig):
                           indexes=i)
 
     dec = info.width - w2
-    with rasterio.open('res2.tif', 'w',
+    with rasterio.open('collection2.tif', 'w',
                        driver=info.driver,
                        width=w2, height=info.height, count=info.count,
                        dtype=info.dtypes[0], transform=info.transform) as dst:
 
-        for t in res2:
+        for t in collection2:
             (x0, y0, x1, y1) = t.bounding_polygon.bounds
             (x0, y0, x1, y1) = (int(x0), int(y0-dec), int(x1), int(y1-dec))
             for i in info.indexes:
@@ -178,11 +189,11 @@ def run_dask(pathimage, pathconfig):
                           window=Window(y0, x0, y1-y0, x1-x0),
                           indexes=i)
 
-    with rasterio.open('res3.tif', 'w',
+    with rasterio.open('All.tif', 'w',
                        driver=info.driver,
                        width=info.width, height=info.height, count=info.count,
                        dtype=info.dtypes[0], transform=info.transform) as dst:
-        for t in res1:
+        for t in collection1:
             (x0, y0, x1, y1) = t.bounding_polygon.bounds
             (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
             for i in info.indexes:
@@ -190,14 +201,14 @@ def run_dask(pathimage, pathconfig):
                           window=Window(y0, x0, y1-y0, x1-x0),
                           indexes=i)
 
-        for t in res2:
+        for t in collection2:
             (x0, y0, x1, y1) = t.bounding_polygon.bounds
             (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
             for i in info.indexes:
                 dst.write(t.img[i-1],
                           window=Window(y0, x0, y1-y0, x1-x0),
                           indexes=i)
-        for (t,_) in res3:
+        for (t,_) in res4:
             (x0, y0, x1, y1) = t.bounding_polygon.bounds
             (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
             for i in info.indexes:
@@ -222,37 +233,3 @@ if __name__ == '__main__':
     # print(r)
 
     run_dask('data/NE1_50M_SR_W/NE1_50M_SR_W.tif', 'config.yaml')
-
-
-    # (collection1, collection2, info, _, _, _, _, w1, w2) = extract_collections(
-    #                                 'data/NE1_50M_SR_W/NE1_50M_SR_W.tif')
-    #
-    #
-    # with rasterio.open('res1.tif', 'w',
-    #                    driver=info.driver,
-    #                    width=w1, height=info.height, count=info.count,
-    #                    dtype=info.dtypes[0], transform=info.transform) as dst:
-    #
-    #     for t in collection1:
-    #         (x0, y0, x1, y1) = t.bounding_polygon.bounds
-    #         (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
-    #         t.add_noise(1,0,0.1)
-    #         for i in info.indexes:
-    #             dst.write(t.img[i-1],
-    #                       window=Window(y0, x0, y1-y0, x1-x0),
-    #                       indexes=i)
-    #
-    # dec = info.width - w2
-    # with rasterio.open('res2.tif', 'w',
-    #                    driver=info.driver,
-    #                    width=w2, height=info.height, count=info.count,
-    #                    dtype=info.dtypes[0], transform=info.transform) as dst:
-    #
-    #     for t in collection2:
-    #         (x0, y0, x1, y1) = t.bounding_polygon.bounds
-    #         (x0, y0, x1, y1) = (int(x0), int(y0-dec), int(x1), int(y1-dec))
-    #
-    #         for i in info.indexes:
-    #             dst.write(t.img[i-1],
-    #                       window=Window(y0, x0, y1-y0, x1-x0),
-    #                       indexes=i)
