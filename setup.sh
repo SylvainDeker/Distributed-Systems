@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
-echo "Download Spark"
-wget https://downloads.apache.org/spark/spark-3.0.0-preview2/spark-3.0.0-preview2-bin-hadoop2.7.tgz
-tar xzf spark-3.0.0-preview2-bin-hadoop2.7.tgz
-rm -f spark-3.0.0-preview2-bin-hadoop2.7.tgz
 
 
 echo "Download a GeoTiff image"

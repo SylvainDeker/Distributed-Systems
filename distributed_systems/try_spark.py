@@ -3,15 +3,19 @@ import os
 import sys
 import numpy as np
 from pyspark import SparkContext
+from pyspark import SparkConf
 import rasterio
 import time
 from distributed_systems.buildCollectionTile import build_collection_tile
 from distributed_systems.tile import Tile
 
 def try_spark_filter2D(pathimage, kernel, output_pathimage):
-    (collection, info) = build_collection_tile(pathimage)
-    sc = SparkContext()
-
+    (collection, info) = build_collection_tile(pathimage,2000,2000)
+    # SparkContext.setSystemProperty('spark.driver.memory', '8g')
+    # SparkContext.setSystemProperty('spark.executor.memory', '6G')
+    conf = SparkConf()
+    conf.set('spark.driver.memory', '4G')
+    sc = SparkContext(conf=conf)
 
     timer = time.time()
     rdd = sc.parallelize(collection)

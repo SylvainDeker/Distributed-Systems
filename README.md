@@ -17,13 +17,7 @@ docker build -t distributed-systems-ubuntu .
 # Run docker
 -----
 ```
-docker run -it --rm -v $PWD:/root/Distributed-Systems distributed-systems-ubuntu bash
-```
-# Install
------
-```
-pip3 install .
-#or pip3 install -e .
+docker run -it --rm -p 8081:8081 -v $PWD:/root/Distributed-Systems distributed-systems-ubuntu
 ```
 
 #Test:
