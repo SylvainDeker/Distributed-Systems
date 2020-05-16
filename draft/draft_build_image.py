@@ -29,10 +29,10 @@ print(im.index(x=-190.1,y=-80.1)) #  get the coord pixel from distance corrd
 
 im.close
 
+h = 11
 w = 13
-h = 7
 
-res = rasterio.open('data/NE1_50M_SR_W_w13_h7/NE1_50M_SR_W.tif','w',
+res = rasterio.open('data/NE1_50M_SR_W_w'+str(w)+'_h'+str(h)+'/NE1_50M_SR_W.tif','w',
                     driver=im.driver,
                     width=w,
                     height=h,

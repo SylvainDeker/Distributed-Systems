@@ -5,6 +5,8 @@ import itertools
 from shapely.geometry import Polygon
 from dask.distributed import Client
 from distributed_systems.tile import Tile
+from pyspark import SparkContext
+from pyspark import SparkConf
 import dask
 import yaml
 
@@ -64,6 +66,22 @@ class Dark:
         h = sih
         w = scrw * stw - (stw - (siw % stw)) * (siw % stw > 0)
         return (h, w)
+
+    def index_collection_left(self, i, j):
+        (h, w) = self.shape_collection_left
+        return i*w+j
+
+    def index_collection_right(self, i, j):
+        (h, w) = self.shape_collection_right
+        return i*w+j
+
+    def coord_from_index_collection_left(self, i):
+        (h, w) = self.shape_collection_left
+        return (int(i/w), i%w)
+
+    def coord_from_index_collection_right(self, i):
+        (h, w) = self.shape_collection_right
+        return (int(i/w), i%w)
 
     def coord_collection_from_right_to_left(self, i, j):
         return (i, j + self.vertical_frontiers[0] )
@@ -230,25 +248,22 @@ class Dark:
         # DARK-FDR-001 step 1
         self.extract_collections()
 
-        graph_collection_left = [[None]*self.shape_collection_left[1]]*self.shape_collection_left[0]
-        graph_collection_right = [[None]*self.shape_collection_right[1]]*self.shape_collection_right[0]
-
         # DARK-FDR-001 step 2
         for i in range(self.shape_collection_left[0]):
             for j in range(self.shape_collection_left[1]):
-                graph_collection_left[i][j] = dask.delayed(self.collection_left[i][j].add_noise)(
+                e = dask.delayed(self.collection_left[i][j].add_noise)(
                                                   config['imgleft']['gain'],
                                                   config['imgleft']['mean'],
                                                   config['imgleft']['stddev'])
-                self.collection_left[i][j] = graph_collection_left[i][j].compute()
+                self.collection_left[i][j] = e.compute()
 
         for i in range(self.shape_collection_right[0]):
             for j in range(self.shape_collection_right[1]):
-                graph_collection_right[i][j] = dask.delayed(self.collection_right[i][j].add_noise)(
+                e = dask.delayed(self.collection_right[i][j].add_noise)(
                                                   config['imgleft']['gain'],
                                                   config['imgleft']['mean'],
                                                   config['imgleft']['stddev'])
-                self.collection_right[i][j] = graph_collection_right[i][j].compute()
+                self.collection_right[i][j] = e.compute()
 
         # DARK-FDR-001 step 3
         intersection = self.list_intersection_coord_left()
@@ -291,6 +306,19 @@ class Dark:
             self.collection_right[i_right][j_right] = e2.compute()
 
         client.close()
+
+    def run_spark(self):
+        config = self.load_config(self.pathconfig)
+        conf = SparkConf()
+        conf.set('spark.driver.memory', '4G')
+        sc = SparkContext(conf=conf)
+
+        rdd = sc.parallelize(collection)
+        collection_res = []
+        for n in rdd.toLocalIterator():
+            collection_res.append(n.filter2D(kernel))
+
+        sc.close()
 
 
 
