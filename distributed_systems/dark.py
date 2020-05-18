@@ -117,7 +117,6 @@ class Dark:
 
         self.collection_left = []
         for i in range(self.shape_collection_left[0]):
-            row_collection_left = []
             for j in range(self.shape_collection_left[1]):
                 x0 = i * self.shape_tile[0]
                 y0 = j * self.shape_tile[1]
@@ -130,12 +129,11 @@ class Dark:
                                    (x1, y1),
                                    (x0, y1)]),
                           (i,j))
-                row_collection_left.append(t1)
-            self.collection_left.append(row_collection_left)
+                self.collection_left.append(t1)
+
 
         self.collection_right = []
         for i in range(self.shape_collection_right[0]):
-            row_collection_right = []
             for j in range(self.shape_collection_right[1]):
                 i,j = self.coord_collection_from_right_to_left(i,j)
                 x0 = i * self.shape_tile[0]
@@ -149,8 +147,8 @@ class Dark:
                                    (x1, y1),
                                    (x0, y1)]),
                           (i,j))
-                row_collection_right.append(t1)
-            self.collection_right.append(row_collection_right)
+                self.collection_right.append(t1)
+
 
 
     def write_image_left(self,pathfile='collection_left.tiff'):
@@ -165,15 +163,13 @@ class Dark:
                            dtype=info.dtypes[0],
                            transform=info.transform) as dst:
 
-            for i in range(self.shape_collection_left[0]):
-                for j in range(self.shape_collection_left[1]):
-                    t = self.collection_left[i][j]
-                    (x0, y0, x1, y1) = t.bounding_polygon.bounds
-                    (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
-                    for w in info.indexes:
-                        dst.write(t.img[w-1],
-                                  window=Window(y0, x0, y1-y0, x1-x0),
-                                  indexes=w)
+            for t in self.collection_left:
+                (x0, y0, x1, y1) = t.bounding_polygon.bounds
+                (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
+                for w in info.indexes:
+                    dst.write(t.img[w-1],
+                              window=Window(y0, x0, y1-y0, x1-x0),
+                              indexes=w)
 
     def write_image_glob(self,pathfile='collection_glob.tiff'):
         with rasterio.open(self.pathimage) as data:
@@ -187,27 +183,21 @@ class Dark:
                            dtype=info.dtypes[0],
                            transform=info.transform) as dst:
 
-            for i in range(self.shape_collection_left[0]):
-                for j in range(self.shape_collection_left[1]):
-                    t = self.collection_left[i][j]
-                    (x0, y0, x1, y1) = t.bounding_polygon.bounds
-                    (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
-                    for w in info.indexes:
-                        dst.write(t.img[w-1],
-                                  window=Window(y0, x0, y1-y0, x1-x0),
-                                  indexes=w)
-            for i in range(self.shape_collection_right[0]):
-                for j in range(self.shape_collection_right[1]):
-                    t = self.collection_right[i][j]
-                    (x0, y0, x1, y1) = t.bounding_polygon.bounds
-                    (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
-                    # (x0, y0) = self.coord_image_from_left_to_right(x0, y0)
-                    # (x1, y1) = self.coord_image_from_left_to_right(x1, y1)
+            for t in self.collection_left:
+                (x0, y0, x1, y1) = t.bounding_polygon.bounds
+                (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
+                for w in info.indexes:
+                    dst.write(t.img[w-1],
+                              window=Window(y0, x0, y1-y0, x1-x0),
+                              indexes=w)
 
-                    for w in info.indexes:
-                        dst.write(t.img[w-1],
-                                  window=Window(y0, x0, y1-y0, x1-x0),
-                                  indexes=w)
+            for t in self.collection_right:
+                (x0, y0, x1, y1) = t.bounding_polygon.bounds
+                (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
+                for w in info.indexes:
+                    dst.write(t.img[w-1],
+                              window=Window(y0, x0, y1-y0, x1-x0),
+                              indexes=w)
 
 
     def write_image_right(self,pathfile='collection_right.tiff'):
@@ -222,18 +212,16 @@ class Dark:
                            dtype=info.dtypes[0],
                            transform=info.transform) as dst:
 
-            for i in range(self.shape_collection_right[0]):
-                for j in range(self.shape_collection_right[1]):
-                    t = self.collection_right[i][j]
-                    (x0, y0, x1, y1) = t.bounding_polygon.bounds
-                    (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
-                    (x0, y0) = self.coord_image_from_left_to_right(x0, y0)
-                    (x1, y1) = self.coord_image_from_left_to_right(x1, y1)
+            for t in self.collection_right:
+                (x0, y0, x1, y1) = t.bounding_polygon.bounds
+                (x0, y0, x1, y1) = (int(x0), int(y0), int(x1), int(y1))
+                (x0, y0) = self.coord_image_from_left_to_right(x0, y0)
+                (x1, y1) = self.coord_image_from_left_to_right(x1, y1)
 
-                    for w in info.indexes:
-                        dst.write(t.img[w-1],
-                                  window=Window(y0, x0, y1-y0, x1-x0),
-                                  indexes=w)
+                for w in info.indexes:
+                    dst.write(t.img[w-1],
+                              window=Window(y0, x0, y1-y0, x1-x0),
+                              indexes=w)
 
 
     def load_config(self, pathfile):
@@ -249,21 +237,19 @@ class Dark:
         self.extract_collections()
 
         # DARK-FDR-001 step 2
-        for i in range(self.shape_collection_left[0]):
-            for j in range(self.shape_collection_left[1]):
-                e = dask.delayed(self.collection_left[i][j].add_noise)(
-                                                  config['imgleft']['gain'],
-                                                  config['imgleft']['mean'],
-                                                  config['imgleft']['stddev'])
-                self.collection_left[i][j] = e.compute()
+        for i in range(len(self.collection_left)):
+            e = dask.delayed(self.collection_left[i].add_noise)(
+                                              config['imgleft']['gain'],
+                                              config['imgleft']['mean'],
+                                              config['imgleft']['stddev'])
+            self.collection_left[i] = e.compute()
 
-        for i in range(self.shape_collection_right[0]):
-            for j in range(self.shape_collection_right[1]):
-                e = dask.delayed(self.collection_right[i][j].add_noise)(
-                                                  config['imgleft']['gain'],
-                                                  config['imgleft']['mean'],
-                                                  config['imgleft']['stddev'])
-                self.collection_right[i][j] = e.compute()
+        for i in range(len(self.collection_right)):
+            e = dask.delayed(self.collection_right[i].add_noise)(
+                                              config['imgleft']['gain'],
+                                              config['imgleft']['mean'],
+                                              config['imgleft']['stddev'])
+            self.collection_right[i] = e.compute()
 
         # DARK-FDR-001 step 3
         intersection = self.list_intersection_coord_left()
@@ -275,9 +261,11 @@ class Dark:
 
         for i in range(len(intersection)):
             (i_left,j_left) = intersection[i]
-            mr1 = self.collection_left[i_left][j_left].mean_radiosity
+            idx = self.index_collection_left(i_left, j_left)
+            mr1 = self.collection_left[idx].mean_radiosity
             (i_right, j_right) = self.coord_collection_from_left_to_right(i_left,j_left)
-            mr2 = self.collection_right[i_right][j_right].mean_radiosity
+            idx = self.index_collection_right(i_right, j_right)
+            mr2 = self.collection_right[idx].mean_radiosity
             computed_gains1[i] = np.sqrt(mr2/mr1)
             computed_gains2[i] = np.sqrt(mr1/mr2)
 
@@ -297,13 +285,15 @@ class Dark:
         # DARK-FDR-001 step 7 & 8
         for i in range(len(intersection)):
             (i_left,j_left) = intersection[i]
+            idx_l = self.index_collection_left(i_left, j_left)
             (i_right, j_right) = self.coord_collection_from_left_to_right(i_left,j_left)
-            e1 = dask.delayed(self.collection_left[i_left][j_left].apply_gain)(computed_gains1[i])
-            e2 = dask.delayed(self.collection_right[i_right][j_right].apply_gain)(computed_gains2[i])
+            idx_r = self.index_collection_right(i_right, j_right)
+            e1 = dask.delayed(self.collection_left[idx_l].apply_gain)(computed_gains1[i])
+            e2 = dask.delayed(self.collection_right[idx_r].apply_gain)(computed_gains2[i])
             e1 = dask.delayed(e1.filter2D)(np.array(config['kernel_blur']))
             e2 = dask.delayed(e2.filter2D)(np.array(config['kernel_blur']))
-            self.collection_left[i_left][j_left] = e1.compute()
-            self.collection_right[i_right][j_right] = e2.compute()
+            self.collection_left[idx_l] = e1.compute()
+            self.collection_right[idx_r] = e2.compute()
 
         client.close()
 
