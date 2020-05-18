@@ -12,6 +12,7 @@ if __name__ == '__main__':
     parser.add_argument("CONFIG",help="config.yaml")
     parser.add_argument("--dask",help="Test dask", action='store_true')
     parser.add_argument("--spark",help="Test spark",action='store_true')
+    parser.add_argument("--no-distrib",help="Dark doesnt distribute computes",action='store_true')
     parser.add_argument("--image-left",help="Write the image (left part)", action='store_true')
     parser.add_argument("--image-right",help="Write the image (right part)", action='store_true')
     parser.add_argument("--image-global",help="Write the image (All)", action='store_true')
@@ -30,6 +31,14 @@ if __name__ == '__main__':
             dark.write_image_glob()
     if args.spark:
         dark.run_spark()
+        if args.image_left:
+            dark.write_image_left()
+        if args.image_right:
+            dark.write_image_right()
+        if args.image_global:
+            dark.write_image_glob()
+    if args.no_distrib:
+        dark.run()
         if args.image_left:
             dark.write_image_left()
         if args.image_right:

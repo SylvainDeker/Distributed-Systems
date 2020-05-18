@@ -310,13 +310,19 @@ class Dark:
         rdd_left = sc.parallelize(self.collection_left)
         for n in rdd_left.toLocalIterator():
             idx = self.index_collection_left(n.index[0],n.index[1])
-            self.collection_left[idx] = n.filter2D(np.array(config['kernel_blur']))
+            self.collection_left[idx] = n.add_noise(
+                                        config['imgleft']['gain'],
+                                        config['imgleft']['mean'],
+                                        config['imgleft']['stddev'])
 
         rdd_right = sc.parallelize(self.collection_right)
         for n in rdd_right.toLocalIterator():
             (i,j) = self.coord_collection_from_left_to_right(n.index[0],n.index[1])
             idx = self.index_collection_right(i,j)
-            self.collection_right[idx] = n.filter2D(np.array(config['kernel_blur']))
+            self.collection_right[idx] = n.add_noise(
+                                        config['imgright']['gain'],
+                                        config['imgright']['mean'],
+                                        config['imgright']['stddev'])
 
         # DARK-FDR-001 step 3
         intersection = self.list_intersection_coord_left()
@@ -366,14 +372,79 @@ class Dark:
 
         sc.stop()
 
+    def run(self):
+        config = self.load_config(self.pathconfig)
+
+        # DARK-FDR-001 step 1
+        self.extract_collections()
+
+        # DARK-FDR-001 step 2
+        for n in self.collection_left:
+            n.add_noise(config['imgleft']['gain'],
+                        config['imgleft']['mean'],
+                        config['imgleft']['stddev'])
+
+        for n in self.collection_right:
+            n.add_noise(config['imgright']['gain'],
+                        config['imgright']['mean'],
+                        config['imgright']['stddev'])
+
+        # DARK-FDR-001 step 3
+        intersection = self.list_intersection_coord_left()
+
+        # DARK-FDR-001 step 4 & 5
+        computed_gains1 = np.empty((len(intersection),self.indexes))
+        computed_gains2 = np.empty((len(intersection),self.indexes))
+
+
+        for i in range(len(intersection)):
+            (i_left,j_left) = intersection[i]
+            idx = self.index_collection_left(i_left, j_left)
+            mr1 = self.collection_left[idx].mean_radiosity
+            (i_right, j_right) = self.coord_collection_from_left_to_right(i_left,j_left)
+            idx = self.index_collection_right(i_right, j_right)
+            mr2 = self.collection_right[idx].mean_radiosity
+            computed_gains1[i] = np.sqrt(mr2/mr1)
+            computed_gains2[i] = np.sqrt(mr1/mr2)
+
+        # DARK-FDR-001 step 6
+        computed_gains1 = np.moveaxis(computed_gains1,1,0)
+        computed_gains2 = np.moveaxis(computed_gains2,1,0)
+        for i in range(self.indexes):
+            computed_gains1[i] = np.convolve(computed_gains1[i],
+                                             config['kernel_gain'],
+                                             'same')
+            computed_gains2[i] = np.convolve(computed_gains2[i],
+                                             config['kernel_gain'],
+                                             'same')
+        computed_gains1 = np.moveaxis(computed_gains1,1,0)
+        computed_gains2 = np.moveaxis(computed_gains2,1,0)
+
+
+        # DARK-FDR-001 step 7 & 8
+        for i in range(len(intersection)):
+            (i_left,j_left) = intersection[i]
+            idx_l = self.index_collection_left(i_left, j_left)
+            (i_right, j_right) = self.coord_collection_from_left_to_right(i_left,j_left)
+            idx_r = self.index_collection_right(i_right, j_right)
+            self.collection_left[idx_l]\
+                .apply_gain(computed_gains1[i])\
+                .filter2D(np.array(config['kernel_blur']))
+
+            self.collection_right[idx_r]\
+                .apply_gain(computed_gains2[i])\
+                .filter2D(np.array(config['kernel_blur']))
+
+
 
 
 
 if __name__ == '__main__':
-    dark = Dark('data/NE1_50M_SR_W/NE1_50M_SR_W.tif',(500,500),'config.yaml')
+    dark = Dark('data/NE1_50M_SR_W/NE1_50M_SR_W.tif',(200,200),'config.yaml')
 
     # dark.run_dask()
-    dark.run_spark()
+    # dark.run_spark()
+    dark.run()
     dark.write_image_left()
     dark.write_image_right()
     dark.write_image_glob()
