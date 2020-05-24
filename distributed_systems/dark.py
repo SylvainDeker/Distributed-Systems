@@ -9,7 +9,7 @@ from pyspark import SparkContext
 from pyspark import SparkConf
 import dask
 import yaml
-
+import time
 
 class Dark:
     def __init__(self, pathimage, shape_tile, pathconfig):
@@ -19,7 +19,7 @@ class Dark:
         self.shape_image = None
         self.collection_left = []
         self.collection_right = []
-
+        self.timer = 0
 
     @property
     def shape_all_tiles(self):
@@ -235,7 +235,7 @@ class Dark:
         client = Client()
         # DARK-FDR-001 step 1
         self.extract_collections()
-
+        timer = time.time()
         # DARK-FDR-001 step 2
         for i in range(len(self.collection_left)):
             e = dask.delayed(self.collection_left[i].add_noise)(
@@ -295,6 +295,7 @@ class Dark:
             self.collection_left[idx_l] = e1.compute()
             self.collection_right[idx_r] = e2.compute()
 
+        self.timer = time.time() - timer
         client.close()
 
     def run_spark(self):
@@ -306,6 +307,7 @@ class Dark:
         # DARK-FDR-001 step 1
         self.extract_collections()
 
+        timer = time.time()
         # DARK-FDR-001 step 2
         rdd_left = sc.parallelize(self.collection_left)
         for n in rdd_left.toLocalIterator():
@@ -370,13 +372,14 @@ class Dark:
             self.collection_right[idx_r] = e2
 
 
+        self.timer = time.time() - timer
         sc.stop()
 
     def run(self):
         config = self.load_config(self.pathconfig)
-
         # DARK-FDR-001 step 1
         self.extract_collections()
+        timer = time.time()
 
         # DARK-FDR-001 step 2
         for n in self.collection_left:
@@ -436,7 +439,7 @@ class Dark:
                 .filter2D(np.array(config['kernel_blur']))
 
 
-
+        self.timer = time.time() - timer
 
 
 if __name__ == '__main__':
