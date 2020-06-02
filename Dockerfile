@@ -15,4 +15,4 @@ RUN python3 setup.py sdist \
 ENV PATH $PATH:/opt/spark/spark-2.4.5-bin-hadoop2.7/sbin
 WORKDIR /root/Distributed-Systems/
 VOLUME /root/Distributed-Systems
-CMD pip3 install -e . && bash
+CMD pip3 install -e . && export PYSPARK_PYTHON=python3 && bash
