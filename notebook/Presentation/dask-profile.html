@@ -1,0 +1,85 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+    
+      <meta charset="utf-8">
+      <title>Dask Profile</title>
+      
+      
+        
+          
+        
+        
+          
+        <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-2.0.1.min.js" integrity="sha384-JpP8FXbgAZLkfur7LiK3j9AGBhHNIvF742meBJrjO2ShJDhCG2I1uVvW+0DUtrmc" crossorigin="anonymous"></script>
+        <script type="text/javascript">
+            Bokeh.set_log_level("info");
+        </script>
+        
+      
+      
+    
+  </head>
+  
+  
+  <body>
+    
+      
+        
+          
+          
+            
+              <div class="bk-root" id="e2f30041-8a52-4982-8e49-94780257c596" data-root-id="8516"></div>
+            
+          
+        
+      
+      
+        <script type="application/json" id="8639">
+          {"2b4349b2-2210-4738-9ef3-9158ceaaa578":{"roots":{"references":[{"attributes":{"callback":null},"id":"8533","type":"TapTool"},{"attributes":{},"id":"8519","type":"DataRange1d"},{"attributes":{"axis":{"id":"8525"},"ticker":null,"visible":false},"id":"8528","type":"Grid"},{"attributes":{"axis":{"id":"8529"},"dimension":1,"ticker":null,"visible":false},"id":"8532","type":"Grid"},{"attributes":{"source":{"id":"8515"}},"id":"8540","type":"CDSView"},{"attributes":{},"id":"8521","type":"LinearScale"},{"attributes":{"formatter":{"id":"8546"},"ticker":{"id":"8526"},"visible":false},"id":"8525","type":"LinearAxis"},{"attributes":{"data":{"bottom":[0,1,1,2,3,4,5,6,7,8,9,10,11,4,5,6,5,6,7,1,2,3,4,5,6,7,8,1,2,3,2],"color":["#64CB5D","#23898D","#45BF6F","#20A585","#20A585","#20A585","#20A585","#20A585","#20A585","#64CB5D","#433C84","#472A79","#287A8E","#64CB5D","#472A79","#3C4D8A","#45BF6F","#472A79","#3C4D8A","#20A585","#20A585","#20A585","#20A585","#64CB5D","#433C84","#472A79","#287A8E","#287A8E","#472A79","#3C4D8A","#1E978A"],"filename":["","/home/sylvain/.local/lib/python3.7/site-packages/dask/array/random.py","/home/sylvain/.local/lib/python3.7/site-packages/dask/optimization.py","/home/sylvain/.local/lib/python3.7/site-packages/dask/core.py","/home/sylvain/.local/lib/python3.7/site-packages/dask/core.py","/home/sylvain/.local/lib/python3.7/site-packages/dask/core.py","/home/sylvain/.local/lib/python3.7/site-packages/dask/core.py","/home/sylvain/.local/lib/python3.7/site-packages/dask/core.py","/home/sylvain/.local/lib/python3.7/site-packages/dask/core.py","/home/sylvain/.local/lib/python3.7/site-packages/dask/utils.py","/home/sylvain/.local/lib/python3.7/site-packages/dask/array/routines.py","&lt;__array_function__ internals&gt;","/home/sylvain/.local/lib/python3.7/site-packages/numpy/core/numeric.py","/home/sylvain/.local/lib/python3.7/site-packages/dask/utils.py","&lt;__array_function__ internals&gt;","/home/sylvain/.local/lib/python3.7/site-packages/numpy/core/fromnumeric.py","/home/sylvain/.local/lib/python3.7/site-packages/dask/array/reductions.py","&lt;__array_function__ internals&gt;","/home/sylvain/.local/lib/python3.7/site-packages/numpy/core/fromnumeric.py","/home/sylvain/.local/lib/python3.7/site-packages/dask/core.py","/home/sylvain/.local/lib/python3.7/site-packages/dask/core.py","/home/sylvain/.local/lib/python3.7/site-packages/dask/core.py","/home/sylvain/.local/lib/python3.7/site-packages/dask/core.py","/home/sylvain/.local/lib/python3.7/site-packages/dask/utils.py","/home/sylvain/.local/lib/python3.7/site-packages/dask/array/routines.py","&lt;__array_function__ internals&gt;","/home/sylvain/.local/lib/python3.7/site-packages/numpy/core/numeric.py","/home/sylvain/.local/lib/python3.7/site-packages/toolz/functoolz.py","&lt;__array_function__ internals&gt;","/home/sylvain/.local/lib/python3.7/site-packages/numpy/core/fromnumeric.py","/home/sylvain/.local/lib/python3.7/site-packages/dask/array/core.py"],"left":[0,0,0.01871657754010695,0.01871657754010695,0.01871657754010695,0.01871657754010695,0.01871657754010695,0.01871657754010695,0.01871657754010695,0.01871657754010695,0.01871657754010695,0.01871657754010695,0.01871657754010695,0.8262032085561497,0.8262032085561497,0.8262032085561497,0.8475935828877005,0.8475935828877005,0.8475935828877005,0.8502673796791443,0.8502673796791443,0.8502673796791443,0.8502673796791443,0.8502673796791443,0.8502673796791443,0.8502673796791443,0.8502673796791443,0.8556149732620321,0.8556149732620321,0.8556149732620321,0.8823529411764706],"line":["","state = RandomState(state_data)\n","return core.get(self.dsk, self.outkey, dict(zip(self.inkeys, args)))\n","result = _execute_task(task, cache)\n","return func(*(_execute_task(a, cache) for a in args))\n","return func(*(_execute_task(a, cache) for a in args))\n","return [_execute_task(a, cache) for a in arg]\n","return [_execute_task(a, cache) for a in arg]\n","return func(*(_execute_task(a, cache) for a in args))\n","return func(*args, **kwargs)\n","x = tensordot(a, b, axes=axes)\n","","res = dot(at, bt)\n","return func(*args, **kwargs)\n","","initial=initial, where=where)\n","total = sum(x, dtype=dtype, **kwargs)\n","","initial=initial, where=where)\n","return func(*(_execute_task(a, cache) for a in args))\n","return [_execute_task(a, cache) for a in arg]\n","return [_execute_task(a, cache) for a in arg]\n","return func(*(_execute_task(a, cache) for a in args))\n","return func(*args, **kwargs)\n","return x\n","","return res.reshape(olda + oldb)\n","ret = f(ret)\n","","initial=initial, where=where)\n","return concatenate(arrays, axis=axes[0])\n"],"line_number":[0,466,982,151,121,121,115,115,121,30,228,6,1102,30,6,2229,541,6,2229,121,115,115,121,30,234,6,1103,489,6,2229,302],"name":["","_apply_random","__call__","get","_execute_task","&lt;genexpr&gt;","_execute_task","&lt;listcomp&gt;","_execute_task","apply","_tensordot","tensordot","tensordot","apply","sum","sum","mean_chunk","sum","sum","&lt;genexpr&gt;","_execute_task","&lt;listcomp&gt;","_execute_task","apply","_tensordot","tensordot","tensordot","__call__","sum","sum","_concatenate2"],"percentage":["100.0%","1.9%","83.2%","83.2%","83.2%","80.7%","80.7%","80.7%","80.7%","80.7%","80.7%","80.7%","80.7%","2.4%","2.1%","2.1%","0.3%","0.3%","0.3%","0.5%","0.5%","0.5%","0.5%","0.5%","0.5%","0.5%","0.5%","7.0%","2.7%","2.7%","4.3%"],"right":[1,0.01871657754010695,0.8502673796791443,0.8502673796791443,0.8502673796791443,0.8262032085561497,0.8262032085561497,0.8262032085561497,0.8262032085561497,0.8262032085561497,0.8262032085561497,0.8262032085561497,0.8262032085561497,0.8502673796791443,0.8475935828877005,0.8475935828877005,0.8502673796791443,0.8502673796791443,0.8502673796791443,0.8556149732620321,0.8556149732620321,0.8556149732620321,0.8556149732620321,0.8556149732620321,0.8556149732620321,0.8556149732620321,0.8556149732620321,0.9251336898395721,0.8823529411764706,0.8823529411764706,0.9251336898395721],"time":["3.74 s","70.00 ms","3.11 s","3.11 s","3.11 s","3.02 s","3.02 s","3.02 s","3.02 s","3.02 s","3.02 s","3.02 s","3.02 s","90.00 ms","80.00 ms","80.00 ms","10.00 ms","10.00 ms","10.00 ms","20.00 ms","20.00 ms","20.00 ms","20.00 ms","20.00 ms","20.00 ms","20.00 ms","20.00 ms","260.00 ms","100.00 ms","100.00 ms","160.00 ms"],"top":[1,2,2,3,4,5,6,7,8,9,10,11,12,5,6,7,6,7,8,2,3,4,5,6,7,8,9,2,3,4,3],"width":[1,0.01871657754010695,0.8315508021390374,0.8315508021390374,0.8315508021390374,0.8074866310160428,0.8074866310160428,0.8074866310160428,0.8074866310160428,0.8074866310160428,0.8074866310160428,0.8074866310160428,0.8074866310160428,0.024064171122994638,0.021390374331550777,0.021390374331550777,0.002673796791443861,0.002673796791443861,0.002673796791443861,0.005347593582887722,0.005347593582887722,0.005347593582887722,0.005347593582887722,0.005347593582887722,0.005347593582887722,0.005347593582887722,0.005347593582887722,0.06951871657754005,0.0267379679144385,0.0267379679144385,0.04278074866310155]},"selected":{"id":"8549"},"selection_policy":{"id":"8550"}},"id":"8515","type":"ColumnDataSource"},{"attributes":{},"id":"8526","type":"BasicTicker"},{"attributes":{},"id":"8530","type":"BasicTicker"},{"attributes":{"callback":null,"point_policy":"follow_mouse","tooltips":"\n            &lt;div&gt;\n                &lt;span style=\"font-size: 14px; font-weight: bold;\"&gt;Name:&lt;/span&gt;&amp;nbsp;\n                &lt;span style=\"font-size: 10px; font-family: Monaco, monospace;\"&gt;@name&lt;/span&gt;\n            &lt;/div&gt;\n            &lt;div&gt;\n                &lt;span style=\"font-size: 14px; font-weight: bold;\"&gt;Filename:&lt;/span&gt;&amp;nbsp;\n                &lt;span style=\"font-size: 10px; font-family: Monaco, monospace;\"&gt;@filename&lt;/span&gt;\n            &lt;/div&gt;\n            &lt;div&gt;\n                &lt;span style=\"font-size: 14px; font-weight: bold;\"&gt;Line number:&lt;/span&gt;&amp;nbsp;\n                &lt;span style=\"font-size: 10px; font-family: Monaco, monospace;\"&gt;@line_number&lt;/span&gt;\n            &lt;/div&gt;\n            &lt;div&gt;\n                &lt;span style=\"font-size: 14px; font-weight: bold;\"&gt;Line:&lt;/span&gt;&amp;nbsp;\n                &lt;span style=\"font-size: 10px; font-family: Monaco, monospace;\"&gt;@line&lt;/span&gt;\n            &lt;/div&gt;\n            &lt;div&gt;\n                &lt;span style=\"font-size: 14px; font-weight: bold;\"&gt;Time:&lt;/span&gt;&amp;nbsp;\n                &lt;span style=\"font-size: 10px; font-family: Monaco, monospace;\"&gt;@time&lt;/span&gt;\n            &lt;/div&gt;\n            &lt;div&gt;\n                &lt;span style=\"font-size: 14px; font-weight: bold;\"&gt;Percentage:&lt;/span&gt;&amp;nbsp;\n                &lt;span style=\"font-size: 10px; font-family: Monaco, monospace;\"&gt;@percentage&lt;/span&gt;\n            &lt;/div&gt;\n            "},"id":"8541","type":"HoverTool"},{"attributes":{},"id":"8550","type":"UnionRenderers"},{"attributes":{"below":[{"id":"8525"}],"center":[{"id":"8528"},{"id":"8532"}],"left":[{"id":"8529"}],"renderers":[{"id":"8539"}],"sizing_mode":"stretch_both","title":{"id":"8544"},"toolbar":{"id":"8534"},"x_range":{"id":"8517"},"x_scale":{"id":"8521"},"y_range":{"id":"8519"},"y_scale":{"id":"8523"}},"id":"8516","subtype":"Figure","type":"Plot"},{"attributes":{},"id":"8548","type":"BasicTickFormatter"},{"attributes":{"active_drag":"auto","active_inspect":"auto","active_multi":null,"active_scroll":"auto","active_tap":"auto","tools":[{"id":"8533"},{"id":"8541"}]},"id":"8534","type":"Toolbar"},{"attributes":{"formatter":{"id":"8548"},"ticker":{"id":"8530"},"visible":false},"id":"8529","type":"LinearAxis"},{"attributes":{"text":""},"id":"8544","type":"Title"},{"attributes":{},"id":"8549","type":"Selection"},{"attributes":{"data_source":{"id":"8515"},"glyph":{"id":"8537"},"hover_glyph":null,"muted_glyph":null,"nonselection_glyph":null,"selection_glyph":null,"view":{"id":"8540"}},"id":"8539","type":"GlyphRenderer"},{"attributes":{},"id":"8523","type":"LinearScale"},{"attributes":{},"id":"8546","type":"BasicTickFormatter"},{"attributes":{"bottom":{"field":"bottom"},"fill_color":{"field":"color"},"left":{"field":"left"},"line_width":{"value":2},"right":{"field":"right"},"top":{"field":"top"}},"id":"8537","type":"Quad"},{"attributes":{},"id":"8517","type":"DataRange1d"}],"root_ids":["8516"]},"title":"Bokeh Application","version":"2.0.1"}}
+        </script>
+        <script type="text/javascript">
+          (function() {
+            var fn = function() {
+              Bokeh.safely(function() {
+                (function(root) {
+                  function embed_document(root) {
+                    
+                  var docs_json = document.getElementById('8639').textContent;
+                  var render_items = [{"docid":"2b4349b2-2210-4738-9ef3-9158ceaaa578","root_ids":["8516"],"roots":{"8516":"e2f30041-8a52-4982-8e49-94780257c596"}}];
+                  root.Bokeh.embed.embed_items(docs_json, render_items);
+                
+                  }
+                  if (root.Bokeh !== undefined) {
+                    embed_document(root);
+                  } else {
+                    var attempts = 0;
+                    var timer = setInterval(function(root) {
+                      if (root.Bokeh !== undefined) {
+                        clearInterval(timer);
+                        embed_document(root);
+                      } else {
+                        attempts++;
+                        if (attempts > 100) {
+                          clearInterval(timer);
+                          console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+                        }
+                      }
+                    }, 10, root)
+                  }
+                })(window);
+              });
+            };
+            if (document.readyState != "loading") fn();
+            else document.addEventListener("DOMContentLoaded", fn);
+          })();
+        </script>
+    
+  </body>
+  
+</html>
