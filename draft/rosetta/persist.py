@@ -2,22 +2,29 @@ import dask
 import dask.bag as db
 from functools import reduce
 from dask.distributed import Client
+import time
+
+def my_wait(d):
+    print("coucou "+str(d))
+    return d+1
 
 
 if __name__ == '__main__':
 
-    # client = Client()
+    client = Client()
 
-    collection =[1,2,3,4,5,6]
+    collection =[1,1,1,1,1,1]
 
     rdd = db.from_sequence(collection)\
-            .map(lambda x:[x for n in range(x)])
+            .map(my_wait)
 
-    rdd= rdd.persist(  scheduler='processes',
-                       traversal=False,
-                       optimize_graph=True)
-    rdd.visualize('persist.png')
-    # print(res)
+    rdd = rdd.persist()
+    print("before")
+    # time.sleep(5)
+    rdd = rdd.map(my_wait)
+    print("After")
+
+    time.sleep(5)
     res = rdd.compute()
     print('dask =',res)
 
