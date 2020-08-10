@@ -2,7 +2,7 @@ FROM ubuntu:19.10
 
 RUN apt-get update \
 && apt-get install -y python3 python3-pip openjdk-11-jdk wget valgrind graphviz git \
-&& pip3 install "dask[complete]" dask-kubernetes --upgrade numpy rasterio fiona Shapely bokeh opencv-python pytest pytest-datafiles pyprof2calltree graphviz cachey cffi pyyaml git+git://github.com/jcrist/pycallgrind \
+&& pip3 install "dask[complete]" dask-kubernetes --upgrade numpy rasterio fiona Shapely bokeh matplotlib opencv-python pytest pytest-datafiles pyprof2calltree graphviz cachey cffi pyyaml git+git://github.com/jcrist/pycallgrind \
 && apt-get clean
 WORKDIR /root/
 RUN wget https://downloads.apache.org/spark/spark-3.0.0-preview2/spark-3.0.0-preview2-bin-hadoop2.7.tgz \

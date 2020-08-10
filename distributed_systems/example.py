@@ -2,7 +2,7 @@ import dask.bag as db
 import time
 import numpy as np
 
-scale = 1
+scale = 20
 shape_A = (3*scale, 3*scale)
 tile_size_A = (4*scale,4*scale)
 
@@ -84,7 +84,14 @@ def build_new_tiles(tile):
     return res
 
 def aggregate_tile(tile_a,tile_b):
-    time.sleep(5)
+    # time.sleep(5)
+    t = Tile(tile_a.x,tile_a.y,tile_size_B)
+    t.data = tile_a.data + tile_b.data
+    return t
+
+def aggregate_tile2(tile_a,tile_b):
+    # time.sleep(10)
+    # print("##################")
     t = Tile(tile_a.x,tile_a.y,tile_size_B)
     t.data = tile_a.data + tile_b.data
     return t

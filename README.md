@@ -18,6 +18,8 @@ docker build -t distributed-systems-ubuntu .
 -----
 ```
 docker run -it --rm -p 8787:8787 -p 8081:8081 -v $PWD:/root/Distributed-Systems distributed-systems-ubuntu
+docker run -it --rm --network host -v $PWD:/root/Distributed-Systems distributed-systems-ubuntu
+
 ```
 
 #Test:
