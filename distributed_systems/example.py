@@ -2,7 +2,7 @@ import dask.bag as db
 import time
 import numpy as np
 
-scale = 20
+scale = 28
 shape_A = (3*scale, 3*scale)
 tile_size_A = (4*scale,4*scale)
 

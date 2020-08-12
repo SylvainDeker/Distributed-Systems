@@ -5,10 +5,10 @@ RUN apt-get update \
 && pip3 install "dask[complete]" dask-kubernetes --upgrade numpy rasterio fiona Shapely bokeh matplotlib opencv-python pytest pytest-datafiles pyprof2calltree graphviz cachey cffi pyyaml git+git://github.com/jcrist/pycallgrind \
 && apt-get clean
 WORKDIR /root/
-RUN wget https://downloads.apache.org/spark/spark-3.0.0-preview2/spark-3.0.0-preview2-bin-hadoop2.7.tgz \
+RUN wget https://downloads.apache.org/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz \
 && mkdir /opt/spark \
-&& tar xzf spark-3.0.0-preview2-bin-hadoop2.7.tgz -C /opt/spark/
-WORKDIR /opt/spark/spark-3.0.0-preview2-bin-hadoop2.7/python/
+&& tar xzf spark-3.0.0-bin-hadoop2.7.tgz -C /opt/spark/
+WORKDIR /opt/spark/spark-3.0.0-bin-hadoop2.7/python/
 RUN python3 setup.py sdist \
 && pip3 install dist/*.tar.gz
 

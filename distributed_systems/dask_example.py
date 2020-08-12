@@ -20,19 +20,19 @@ if __name__ == '__main__':
 
     time.sleep(5)
 
-    rdd = db.from_sequence(collection)
+    rdd = db.from_sequence(collection,npartitions=4)
     # rdd = rdd.repartition(8).map_partitions(printt)
     rdd = rdd.map(build_new_tiles).flatten()
     rdd = rdd.foldby(key=lambda tile:(tile.x,tile.y),
                     binop=aggregate_tile,combine=aggregate_tile2)
     time.sleep(5)
     start_time = time.time()
-    res = rdd.compute()
+    res = rdd.take(1)
     print(time.time()-start_time)
     # client.shutdown()
+    time.sleep(5)
 
-
-    print("###############################################")
+    # print("###############################################")
 
 
 

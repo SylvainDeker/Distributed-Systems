@@ -50,7 +50,7 @@ class Netdata:
         ax[1].set(xlabel='Temps (Seconde)',
                ylabel='Gio',
                title='Utilisation RAM')
-        tmax = 75
+        tmax = 200
         ax[0].set_ylim(bottom=0,top=100)
         ax[0].set_xlim(left=0,right=tmax)
         ax[1].set_ylim(bottom=0,top=8589.934592)
@@ -76,10 +76,10 @@ if __name__ == '__main__':
     nd = Netdata()
     nd.start()
 
-    time.sleep(5)
-    os.system("python3 dask_example.py")
-    time.sleep(5)
-    nd.stop('dask.png')
+    # time.sleep(5)
+    # os.system("python3 dask_example.py")
+    # time.sleep(5)
+    # nd.stop('dask.png')
 
 
     nd.start()
