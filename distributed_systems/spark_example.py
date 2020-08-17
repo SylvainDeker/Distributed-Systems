@@ -32,3 +32,4 @@ if __name__ == '__main__':
     res = rdd.take(1)
     print(time.time()-start_time)
     time.sleep(5)
+    input("wait")

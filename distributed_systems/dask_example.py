@@ -20,11 +20,12 @@ if __name__ == '__main__':
 
     time.sleep(5)
 
-    rdd = db.from_sequence(collection,npartitions=4)
+    rdd = db.from_sequence(collection)
     # rdd = rdd.repartition(8).map_partitions(printt)
     rdd = rdd.map(build_new_tiles).flatten()
     rdd = rdd.foldby(key=lambda tile:(tile.x,tile.y),
                     binop=aggregate_tile,combine=aggregate_tile2)
+    rdd.visualize(filename='dask-exemple.png')
     time.sleep(5)
     start_time = time.time()
     res = rdd.take(1)
@@ -37,4 +38,4 @@ if __name__ == '__main__':
 
 
 
-    # input("wait")
+    input("wait")
