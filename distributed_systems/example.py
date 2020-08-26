@@ -83,15 +83,14 @@ def build_new_tiles(tile):
 
     return res
 
-def aggregate_tile(tile_a,tile_b):
-    # time.sleep(5)
-    t = Tile(tile_a.x,tile_a.y,tile_size_B)
-    t.data = tile_a.data + tile_b.data
+def aggregate_tile(tile_1,tile_2):
+    t = Tile(tile_1.x,tile_1.y,tile_size_B)
+    t.data = tile_1.data + tile_2.data
     return t
 
-def aggregate_tile2(tile_a,tile_b):
+def aggregate_tile2(tile_1,tile_2):
     # time.sleep(10)
     # print("##################")
-    t = Tile(tile_a.x,tile_a.y,tile_size_B)
-    t.data = tile_a.data + tile_b.data
+    t = Tile(tile_1.x,tile_1.y,tile_size_B)
+    t.data = tile_1.data + tile_2.data
     return t
